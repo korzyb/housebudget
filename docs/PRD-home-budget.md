@@ -1,171 +1,195 @@
 # PRD — Home Budget: Inteligentny Asystent Budżetu Domowego
 
-**Wersja:** 1.1
-**Data:** kwiecień 2026
+**Wersja:** 2.0
+**Data:** maj 2026
 **Status:** W trakcie rozwoju
 
----
-
-## 1. Cel
-
-Home Budget to prywatna aplikacja webowa, która zamienia chaos paragonów i rachunków w przejrzysty obraz domowych finansów. Zamiast ręcznego wpisywania danych — wystarczy zrobić zdjęcie lub wgrać skan rachunku. Resztą zajmuje się wbudowana sztuczna inteligencja.
-
-**Główna obietnica dla użytkownika:**
-
-> *„Sfotografuj paragon, a aplikacja sama go ogarnie. Zawsze wiesz, gdzie idą pieniądze."*
+> **Zmiany względem v1.1:** Aplikacja zmieniona z desktopowej strony webowej na mobilną PWA (instalowaną na telefonie). Dodano logowanie i synchronizację danych w chmurze dla wielu użytkowników. Aparat telefonu jako główna metoda skanowania paragonów. Docelowy motyw ciemny (dark mode). Role użytkowników zaplanowane jako kolejny etap.
 
 ---
 
-## 2. Dla kogo jest ta aplikacja?
+## 1. Wizja i cel
 
-Aplikacja jest przeznaczona do użytku osobistego lub rodzinnego — przez jedną osobę lub parę prowadzącą wspólny budżet domowy. Główne scenariusze:
-
-- Ktoś, kto chce wiedzieć, ile miesięcznie wydaje na jedzenie, paliwo czy rozrywkę.
-- Osoba, która gubi paragony i traci poczucie kontroli nad wydatkami.
-- Rodzina, która chce łatwo śledzić, czy mieści się w miesięcznym budżecie.
-
-Aplikacja **nie wymaga zakładania konta ani logowania** — wszystkie dane są przechowywane lokalnie, wyłącznie na urządzeniu użytkownika.
+Home Budget to mobilna aplikacja do śledzenia domowych wydatków, instalowana na telefonie jak zwykła aplikacja. Przeznaczona dla jednej osoby lub pary, która chce mieć wspólny wgląd w finanse domowe z różnych urządzeń. Główna obietnica: sfotografuj paragon aparatem telefonu, a aplikacja sama wyciągnie dane i doda je do budżetu.
 
 ---
 
-## 3. Co aplikacja robi - przegląd funkcji
+## 2. Dla kogo?
 
-### 3.1 Skanowanie rachunków przez AI
+Aplikacja jest przeznaczona do użytku osobistego lub rodzinnego — przez jedną osobę lub dwie osoby prowadzące wspólny budżet (np. para). Każda z osób loguje się na swoje konto i widzi te same dane, zsynchronizowane na bieżąco.
 
-Użytkownik wgrywa zdjęcie lub skan paragonu (JPG, PNG, PDF). Aplikacja wysyła go do silnika sztucznej inteligencji (Google Gemini), który automatycznie:
+Główne scenariusze użycia:
 
-- rozpoznaje nazwę sklepu lub usługodawcy,
-- wyciąga datę zakupu,
-- tworzy listę pozycji z cenami,
-- oblicza kwotę końcową,
-- proponuje kategorię wydatku (np. Jedzenie, Transport, Dom).
-
-Po analizie użytkownik widzi wynik i może go poprawić przed zapisaniem — na wypadek, gdyby AI pomyliła się w jakimś szczególe.
-
-### 3.2 Lokalne przechowywanie danych
-
-Wszystkie rachunki, zdjęcia i dane są zapisywane bezpośrednio w przeglądarce użytkownika (w lokalnej bazie danych). Oznacza to:
-
-- **żadnych serwerów**, żadnej rejestracji, żadnego logowania,
-- dane **nigdy nie opuszczają urządzenia** (poza chwilą analizy przez AI),
-- aplikacja działa nawet bez dostępu do internetu (po pierwszym załadowaniu).
-
-### 3.3 Kategorie wydatków
-
-Aplikacja posiada 6 wbudowanych kategorii, każda z własnym kolorem i ikoną:
-
-| Kategoria    | Opis                                      |
-| ------------ | ----------------------------------------- |
-| 🛒 Jedzenie  | Sklepy spożywcze, restauracje, kawiarnie |
-| 🚗 Transport | Paliwo, bilety komunikacji, parking       |
-| 🎮 Rozrywka  | Kino, książki, sport, streaming         |
-| 🏠 Dom       | Artykuły domowe, meble, remonty          |
-| 💊 Zdrowie   | Apteka, kosmetyki, siłownia              |
-| 📦 Inne      | Elektronika, usługi, zakupy online       |
-
-Użytkownik może też dodawać własne kategorie z wybraną ikoną i kolorem.
+- Stoisz przy kasie, robisz zdjęcie paragonu telefonem — aplikacja sama go ogarnia.
+- Sprawdzasz wieczorem ile wydałeś w tym tygodniu na jedzenie.
+- Partner/partnerka dodaje swoje zakupy ze swojego telefonu — oboje widzicie wspólny obraz budżetu.
+- Przeglądasz historię wydatków z poprzednich miesięcy, żeby zobaczyć trendy.
 
 ---
 
-## 4. Widoki aplikacji
+## 3. Co aplikacja robi — przegląd funkcji
 
-### 4.1 Widok: Przegląd (Dashboard)
+1. **Skanowanie paragonów aparatem** — użytkownik otwiera aparat bezpośrednio w aplikacji i fotografuje paragon. Sztuczna inteligencja automatycznie rozpoznaje sklep, datę, listę pozycji z cenami i proponuje kategorię. Użytkownik widzi wynik i może go poprawić przed zapisaniem.
 
-Strona główna aplikacji. Otwiera się jako pierwsza i daje pełny obraz sytuacji finansowej na jeden rzut oka.
+2. **Wgrywanie zdjęć i skanów** — alternatywnie użytkownik może wgrać zdjęcie lub skan paragonu z galerii telefonu (JPG, PNG, PDF). Dalszy proces jest identyczny jak przy aparacie.
 
-**Co zawiera:**
+3. **Przechowywanie danych w chmurze** — wszystkie rachunki i dane są zapisywane na serwerze i dostępne z każdego zalogowanego urządzenia. Dane nie giną po wyczyszczeniu telefonu.
 
-- **3 karty z kwotami** — wydatki dziś, w tym tygodniu i w bieżącym miesiącu.
-- **Wykres słupkowy** — historia wydatków z ostatnich 6 miesięcy, żeby zobaczyć trendy.
-- **Pierścień budżetu** — wizualizacja tego, ile z miesięcznego limitu (5 000 zł) zostało już wydane. Centrum pierścienia pokazuje dokładną kwotę, a kolor zmienia się na czerwony gdy zbliżamy się do limitu.
-- **Karty kategorii** — poziomy karuzel pokazujący, ile wydano w każdej kategorii tego miesiąca, uszeregowany od najwyższych do najniższych.
-- **Panel boczny** z:
-  - listą ostatnich rachunków (klikalne, prowadzą do szczegółów),
-  - własne kategorie użytkownika,
-  - przyciskiem dodania nowej kategorii,
-  - mini-kalendarzem z zaznaczonymi dniami, w których były zakupy.
-- **Przycisk dodania rachunku** — otwiera strefę do wgrania zdjęcia.
+4. **Logowanie i konta użytkowników** — każda osoba loguje się własnym adresem e-mail i hasłem. Dane są wspólne — każdy zalogowany użytkownik widzi i może dodawać rachunki do wspólnego budżetu.
 
-### 4.2 Widok: Rachunki (Lista)
+5. **Kategorie wydatków** — każdy rachunek przypisany jest do jednej z 6 wbudowanych kategorii (Jedzenie, Transport, Rozrywka, Dom, Zdrowie, Inne). Użytkownik może dodawać własne kategorie z wybraną ikoną i kolorem.
 
-Pełna lista wszystkich zapisanych rachunków w formie tabeli.
+6. **Przegląd i statystyki** — ekran główny pokazuje wydatki dziś, w tym tygodniu i w bieżącym miesiącu, wykres historii za ostatnie miesiące oraz pierścień budżetu z informacją ile z miesięcznego limitu zostało już wydane.
 
-**Co zawiera:**
+7. **Lista rachunków z filtrami** — pełna historia wszystkich rachunków z możliwością filtrowania po dacie i kategorii.
 
-- Tabela z kolumnami: sklep, data, kategoria, kwota.
-- **Filtry** — według zakresu dat (od–do) i według kategorii.
-- Sortowanie po dacie.
-- Przycisk usunięcia rachunku przy każdym wierszu.
-- Kliknięcie rachunku → otwiera widok Szczegółów.
+8. **Widok kalendarza** — miesięczny podgląd wydatków w układzie kalendarza. Kliknięcie dnia pokazuje listę rachunków z tego dnia.
 
-### 4.3 Widok: Szczegóły rachunku
+9. **Ciemny i jasny motyw** — aplikacja domyślnie uruchamia się w ciemnym motywie (dark). Użytkownik może przełączyć na jasny motyw w ustawieniach.
 
-Pełny podgląd jednego rachunku po kliknięciu go z listy lub po dodaniu nowego.
+---
 
-**Co zawiera:**
+## 4. Widoki / ekrany
 
-- Podgląd zdjęcia/skanu paragonu (po lewej).
-- Formularz z danymi (po prawej):
+### 4.1 Ekran logowania
+
+**Cel:** Umożliwia wejście do aplikacji po podaniu danych konta.
+
+**Zawiera:**
+- Pole e-mail i hasło.
+- Przycisk „Zaloguj się".
+- Link „Nie masz konta? Zarejestruj się".
+- Link „Zapomniałem hasła".
+
+---
+
+### 4.2 Ekran rejestracji
+
+**Cel:** Założenie nowego konta.
+
+**Zawiera:**
+- Pole imienia, e-mail, hasło i potwierdzenie hasła.
+- Przycisk „Utwórz konto".
+- Po rejestracji użytkownik trafia prosto do ekranu głównego.
+
+---
+
+### 4.3 Ekran główny (Dashboard)
+
+**Cel:** Daje pełny obraz sytuacji finansowej na jeden rzut oka. To pierwszy ekran po zalogowaniu.
+
+**Zawiera:**
+- Powitanie z imieniem zalogowanego użytkownika.
+- 3 karty z kwotami — wydatki dziś, w tym tygodniu i w bieżącym miesiącu.
+- Pierścień budżetu — ile z miesięcznego limitu zostało wydane. Centrum pokazuje dokładną kwotę. Kolor zmienia się na czerwony gdy zbliżamy się do limitu.
+- Wykres słupkowy — historia wydatków z ostatnich 6 miesięcy.
+- Karty kategorii — poziomy przewijany pasek z kwotami wydanymi w każdej kategorii w bieżącym miesiącu, uszeregowany od najwyższych.
+- Lista ostatnich rachunków — kilka ostatnich pozycji, klikalne, prowadzą do szczegółów.
+- Duży przycisk „Dodaj paragon" — zawsze widoczny, otwiera wybór: aparat lub galeria.
+
+---
+
+### 4.4 Ekran aparatu / wgrywania paragonu
+
+**Cel:** Pobranie zdjęcia paragonu i uruchomienie analizy przez AI.
+
+**Zawiera:**
+- Podgląd aparatu z przyciskiem zdjęcia (tryb domyślny).
+- Przycisk przełączenia na wybór z galerii.
+- Po zrobieniu zdjęcia — podgląd z opcją „Użyj tego zdjęcia" lub „Zrób ponownie".
+- Wskaźnik ładowania podczas analizy przez AI.
+- Po analizie — automatyczne przejście do ekranu szczegółów paragonu.
+
+---
+
+### 4.5 Ekran szczegółów paragonu
+
+**Cel:** Weryfikacja i zapis danych wyciągniętych przez AI z paragonu.
+
+**Zawiera:**
+- Miniatura zdjęcia paragonu (możliwość powiększenia).
+- Formularz z danymi do weryfikacji i edycji:
   - Nazwa sklepu
   - Data zakupu
   - Kategoria (można zmienić)
-  - Lista pozycji z cenami
+  - Lista pozycji z cenami (można edytować)
   - Kwota łączna
-- Przyciski: **Zapisz zmiany** i **Usuń rachunek**.
+- Przycisk „Zapisz".
+- Przycisk „Usuń" (gdy przegląda się istniejący paragon).
 
-Ten widok pojawia się automatycznie po analizie AI, żeby użytkownik mógł zweryfikować wyciągnięte dane.
+Ten ekran pojawia się automatycznie po analizie AI oraz po kliknięciu rachunku z listy.
 
-### 4.4 Widok: Kalendarz
+---
 
-Miesięczny podgląd wydatków w układzie kalendarza. Pozwala zobaczyć, kiedy i ile wydano w konkretnych dniach.
+### 4.6 Ekran rachunków (Lista)
 
-**Co zawiera:**
+**Cel:** Pełna historia wszystkich zapisanych rachunków.
 
+**Zawiera:**
+- Lista rachunków posortowana od najnowszych: sklep, data, kategoria, kwota.
+- Filtry — według zakresu dat i według kategorii.
+- Kliknięcie rachunku otwiera ekran szczegółów.
+- Możliwość usunięcia rachunku.
+
+---
+
+### 4.7 Ekran kalendarza
+
+**Cel:** Podgląd wydatków w układzie miesięcznym — kiedy i ile wydano.
+
+**Zawiera:**
 - Siatka kalendarza z bieżącym miesiącem.
-- Nawigacja między miesiącami (strzałki wstecz/wprzód + przycisk „Dziś").
+- Nawigacja między miesiącami.
 - Każdy dzień z rachunkami pokazuje łączną kwotę i kolorowe kropki (jedna na kategorię).
-- Kliknięcie dnia → panel boczny pokazuje listę rachunków z tego dnia.
-- Kliknięcie rachunku w panelu → przejście do widoku Szczegółów.
-- Gdy żaden dzień nie jest wybrany, panel boczny pokazuje podsumowanie kategorii za cały wybrany miesiąc.
+- Kliknięcie dnia — lista rachunków z tego dnia.
+- Kliknięcie rachunku z listy — przejście do ekranu szczegółów.
+- Gdy żaden dzień nie jest wybrany — podsumowanie kategorii za cały miesiąc.
+
+---
+
+### 4.8 Ekran ustawień
+
+**Cel:** Konfiguracja aplikacji i konta.
+
+**Zawiera:**
+- Przełącznik motywu: ciemny / jasny.
+- Ustawienie miesięcznego limitu budżetu.
+- Zarządzanie własnymi kategoriami (dodawanie, usuwanie).
+- Sekcja konta: imię, e-mail, zmiana hasła.
+- Przycisk „Wyloguj się".
 
 ---
 
 ## 5. Nawigacja
 
-Aplikacja używa prostej nawigacji tekstowej na górze strony:
+Aplikacja używa dolnego paska nawigacji (standard mobilny) z 4 pozycjami:
 
 ```
-Przegląd   Rachunki   Kalendarz   [Szczegóły — tylko gdy otwarty rachunek]
+[Dashboard]  [Rachunki]  [Kalendarz]  [Ustawienia]
 ```
 
-Aktywna sekcja jest podkreślona cienką linią.
+Centralny przycisk „+" (dodaj paragon) wyróżniony kolorem, zawsze widoczny ponad paskiem nawigacji — dostępny z każdego ekranu.
+
+Ekran szczegółów paragonu otwiera się jako nakładka nad aktualnym ekranem z przyciskiem powrotu.
 
 ---
 
-## 6. Integracja z AI (Google Gemini)
+## 6. Integracje zewnętrzne
 
-Aplikacja korzysta z modelu **Google Gemini** do analizy obrazów rachunków.
+**Google Gemini (sztuczna inteligencja)**
+Używana do analizy zdjęć paragonów. Gdy użytkownik fotografuje paragon, zdjęcie trafia do silnika AI, który rozpoznaje dane (sklep, data, pozycje, kwota) i odsyła je do aplikacji w postaci gotowej do wyświetlenia. Użytkownik podaje własny klucz dostępu do usługi Gemini — jest on przechowywany bezpiecznie i nigdy nie trafia nigdzie poza Google.
 
-**Jak to działa w praktyce:**
-
-1. Użytkownik wgrywa zdjęcie paragonu.
-2. Zdjęcie jest wysyłane do API Gemini z prośbą o wyciągnięcie danych w ustrukturyzowanym formacie (JSON).
-3. Gemini odpowiada z rozpoznanymi danymi.
-4. Aplikacja wyświetla wynik użytkownikowi do weryfikacji.
-
-**Klucz API:** Użytkownik podaje własny klucz API Google Gemini — jest on przechowywany lokalnie w przeglądarce i nigdy nie trafia na żaden zewnętrzny serwer poza Google.
+**Supabase (baza danych i konta)**
+Zewnętrzna usługa przechowująca dane aplikacji w chmurze. Zapewnia logowanie użytkowników (e-mail + hasło) oraz synchronizację danych między urządzeniami. Dane są dostępne z każdego telefonu, na którym użytkownik się zaloguje.
 
 ---
 
 ## 7. Co jest poza zakresem obecnej wersji
 
-Poniższe funkcje nie są częścią aktualnej wersji, ale mogą pojawić się w przyszłości:
-
-- **Synchronizacja między urządzeniami** — teraz dane są tylko na jednym urządzeniu.
-- **Eksport do CSV lub PDF** — na potrzeby zestawień lub podatków.
-- **Wersja mobilna (PWA)** — instalacja na telefonie jak normalna aplikacja.
-- **Wiele portfeli / kont** — np. oddzielnie moje wydatki i wydatki partnera.
-- **Powiadomienia o przekroczeniu limitu** — alert gdy budżet się kończy.
-- **Planowanie budżetu** — określanie limitów per kategoria.
-- **Logowanie i backup w chmurze** — dla bezpieczeństwa danych i dostępu z wielu urządzeń.
-- **Rozpoznawanie paragonów z aparatu na żywo** — bezpośredni aparat zamiast wgrywania pliku.
+- **Role użytkowników** — np. administrator / członek rodziny z ograniczonym dostępem. Architektura kont jest przygotowana na wprowadzenie ról w przyszłości, ale w obecnej wersji wszyscy zalogowani użytkownicy mają identyczne uprawnienia.
+- **Eksport danych** — do CSV lub PDF (planowane).
+- **Powiadomienia push** — alert gdy budżet się kończy (planowane).
+- **Planowanie budżetu per kategoria** — określanie limitów dla każdej kategorii osobno (planowane).
+- **Wiele portfeli** — np. oddzielny budżet domowy i osobisty (planowane).
+- **Rozpoznawanie paragonów na żywo** — analiza w czasie rzeczywistym bez robienia zdjęcia (planowane).
+- **Wersja desktopowa** — aplikacja jest zoptymalizowana pod telefon. Dostęp przez przeglądarkę na komputerze jest możliwy, ale nie jest priorytetem.

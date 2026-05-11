@@ -1,60 +1,71 @@
 # Design Guide — Home Budget
 
-**Wersja:** 1.0  
-**Data:** kwiecień 2026
+**Wersja:** 2.0
+**Data:** maj 2026
+
+> **Zmiany względem v1.0:** Aplikacja zmieniona z desktopowej na mobilną PWA. Ciemny motyw (dark) jest teraz głównym i domyślnym. Jasny motyw pozostaje jako opcja do wyboru w ustawieniach. Nawigacja zmieniona z poziomego paska tekstowego na dolny pasek nawigacji (standard mobilny). Układ ekranów dostosowany do pionowego telefonu.
 
 ---
 
 ## 1. Filozofia designu
 
-Home Budget wygląda jak narzędzie finansowe klasy premium — czyste, spokojne, czytelne. Nie ma tu niepotrzebnego chaosu wizualnego, krzykliwych kolorów ani przeładowania informacjami. Każdy element na ekranie jest tam po coś.
+Home Budget wygląda jak aplikacja finansowa klasy premium na telefon — czysta, ciemna, czytelna. Inspiracja: hb04 (mobilny finance tracker), Revolut, Apple Wallet.
 
-Trzy słowa, które opisują styl:
+Trzy słowa opisujące styl:
 
-- **Jasność** — użytkownik rozumie, co widzi, bez czytania instrukcji.
-- **Spokój** — jasne tło, dużo powietrza, miękkie cienie. Nic nie krzyczy.
-- **Precyzja** — liczby są głównym bohaterem. Kwoty są duże, pogrubione i wyraźne.
-
-Inspiracje: Apple (przestrzeń i czytelność), Revolut (dynamika danych finansowych), Airbnb (ciepło w detalach).
+- **Jasność** — użytkownik rozumie co widzi bez czytania instrukcji.
+- **Głębia** — ciemne tło z wyraźnymi kartami tworzącymi poczucie warstw.
+- **Precyzja** — liczby są głównym bohaterem. Duże, pogrubione, wyraźne.
 
 ---
 
-## 2. Kolory
+## 2. Motywy
 
-### Paleta główna
+Aplikacja posiada dwa motywy. **Ciemny jest domyślny** — aplikacja uruchamia się w nim zawsze, chyba że użytkownik zmieni to w ustawieniach.
 
-Aplikacja używa jasnego trybu z chłodnymi odcieniami. Tło jest lekko niebieskaw szare — nie czysta biel, żeby nie było płasko.
+### Motyw ciemny (domyślny)
 
 | Rola | Kolor | Opis |
 |------|-------|------|
-| Tło aplikacji | Chłodna, lekko szaroniebieskawa biel | Bazowa powierzchnia, na której leżą karty |
-| Karty (białe prostokąty) | Czysta, lekko ciepła biel | Wyraźnie odróżnia się od tła |
-| Kolor główny (primary) | Żywy indygo-niebieski | Aktywne przyciski, podkreślenia, nawigacja |
-| Kolor akcentowy | Żywy koral | Budżet ring, wyróżnienia, „wydano" |
+| Tło aplikacji | Głęboki granatowo-fioletowy | Bazowa powierzchnia ekranu |
+| Karty | Ciemny niebieskoszary | Wyraźnie odróżnia się od tła |
+| Kolor główny (primary) | Żywy indygo-niebieski | Aktywne przyciski, nawigacja, focus |
+| Kolor akcentowy | Żywy koral / różowo-fioletowy | Budżet ring, wyróżnienia, „wydano" |
+| Tekst główny | Jasna, lekko niebieskawa biel | Czytelny na ciemnym tle |
+| Tekst pomocniczy | Przygaszony niebieskoszary | Etykiety, daty, podpisy |
+
+### Motyw jasny (opcjonalny)
+
+| Rola | Kolor | Opis |
+|------|-------|------|
+| Tło aplikacji | Chłodna, lekko szaroniebieskawa biel | Bazowa powierzchnia |
+| Karty | Czysta, lekko ciepła biel | Wyraźnie odróżnia się od tła |
+| Kolor główny (primary) | Żywy indygo-niebieski | Jak w ciemnym motywie |
+| Kolor akcentowy | Żywy koral | Jak w ciemnym motywie |
 | Tekst główny | Głęboki granatowo-szary | Nie czarny — tintowany w kierunku niebieskiego |
-| Tekst pomocniczy | Jasny niebieskoszary | Etykiety, daty, podpisy — wyraźnie słabszy od głównego |
+| Tekst pomocniczy | Jasny niebieskoszary | Etykiety, daty, podpisy |
 
 ### Kolory kategorii
 
-Każda kategoria ma swój własny kolor, wyraźnie nasycony i rozpoznawalny:
+Kolory kategorii są spójne w obu motywach — w ciemnym nieco jaśniejsze dla lepszej widoczności:
 
-| Kategoria | Kolor | Odcień |
-|-----------|-------|--------|
-| Jedzenie | Szmaragdowy ziel | ciepły teal |
-| Transport | Indygo-niebieski | jak kolor główny |
-| Rozrywka | Fioletowy | głęboki violet |
-| Dom | Bursztynowy | ciepły żółto-pomarańczowy |
-| Zdrowie | Koral | jak kolor akcentowy |
-| Inne | Szaroniebieski | stonowany, neutralny |
+| Kategoria | Kolor |
+|-----------|-------|
+| 🛒 Jedzenie | Szmaragdowy ziel (ciepły teal) |
+| 🚗 Transport | Indygo-niebieski (jak kolor główny) |
+| 🎮 Rozrywka | Głęboki fiolet |
+| 🏠 Dom | Bursztynowy (ciepły żółto-pomarańczowy) |
+| 💊 Zdrowie | Koral (jak kolor akcentowy) |
+| 📦 Inne | Szaroniebieski (stonowany, neutralny) |
 
-Każda kategoria ma też jasną wersję tła (10–15% nasycenia) stosowaną w ikonkach i kafelkach.
+Każda kategoria ma też wersję tła (10–15% nasycenia) stosowaną w ikonkach i kafelkach.
 
 ### Zasady używania kolorów
 
-- Kolory kategorii **zawsze** są spójne w całej aplikacji — ta sama kategoria ma zawsze ten sam kolor niezależnie od widoku.
+- Kolory kategorii są zawsze spójne w całej aplikacji.
 - Kolor główny (niebieski) = akcja, nawigacja, focus.
-- Koral = budżet, kwoty „wydano", drugi plan.
-- **Tekst na kolorowym tle** nigdy nie jest szary — jest ciemniejszą wersją koloru tła.
+- Koral = budżet, kwoty „wydano".
+- Tekst na kolorowym tle nigdy nie jest szary — jest ciemniejszą (motyw jasny) lub jaśniejszą (motyw ciemny) wersją koloru tła.
 
 ---
 
@@ -62,129 +73,136 @@ Każda kategoria ma też jasną wersję tła (10–15% nasycenia) stosowaną w i
 
 ### Czcionka
 
-Aplikacja używa **Plus Jakarta Sans** — nowoczesnej, geometrycznej czcionki bez szeryfów. Jej cechy:
-- Okrągłe, geometryczne litery — miękkie i przyjazne.
-- Bardzo czytelna w małych rozmiarach.
-- Wyraźna różnica między wagami (cienka vs pogrubiona).
+Aplikacja używa **Plus Jakarta Sans** — nowoczesnej, geometrycznej czcionki bez szeryfów. Czytelna w małych rozmiarach, wyraźna różnica między wagami.
 
 ### Hierarchia tekstu
 
-System działa na kontraście — nie wszystkie teksty są tak samo ważne:
+| Rodzaj tekstu | Rozmiar | Waga | Przykład |
+|---------------|---------|------|---------|
+| Kwota główna (hero) | 28–32px | Pogrubiona | Kwota w karcie statystyk, centrum pierścienia |
+| Liczba w liście | 15–16px | Pogrubiona | Kwoty rachunków |
+| Tytuł sekcji | 11–13px | Pogrubiona, WERSALIKI | „OSTATNIE RACHUNKI" |
+| Etykieta | 11–12px | Normalna, pomocnicza | „Wydatki dziś" |
+| Tekst wiersza | 13–14px | Normalna lub średnia | Nazwa sklepu, data |
 
-| Rodzaj tekstu | Rozmiar | Waga | Przykład zastosowania |
-|---------------|---------|------|----------------------|
-| Kwota główna (hero) | 22–26px | **Pogrubiona** | Kwota w karcie statystyk, centrum pierścienia |
-| Liczba w tabeli | 14–16px | Pogrubiona | Kwoty na listach rachunków |
-| Tytuł sekcji | 11–13px | Pogrubiona, WERSALIKI | „OSTATNIE WYDATKI", „KALENDARZ" |
-| Etykieta | 11–12px | Normalna, szara | „Wydatki dziś", „Limit miesięczny" |
-| Tekst w wierszu | 13px | Normalna lub średnia | Nazwa sklepu, data |
+**Zasada:** Kwoty zawsze pogrubione. Etykiety zawsze lżejsze. Duży kontrast między nimi tworzy hierarchię bez bałaganu.
 
-**Kluczowa zasada:** Kwoty i liczby są zawsze pogrubione. Etykiety i opisy zawsze lżejsze. Duża różnica między nimi tworzy wyraźną hierarchię bez bałaganu.
-
-### Liczby
-
-Wszystkie kwoty finansowe używają **tabulatorów liczbowych** — cyfry mają identyczną szerokość, więc kolumny liczb zawsze się wyrównują pionowo. Kwoty zapisywane są w formacie polskim: `1 234,56 zł`.
+Wszystkie kwoty finansowe w formacie polskim: `1 234,56 zł`.
 
 ---
 
-## 4. Zaokrąglenia i kształty
+## 4. Układ mobilny
 
-To jeden z najbardziej charakterystycznych elementów wizualnych aplikacji.
+Aplikacja jest zaprojektowana wyłącznie pod pionowy ekran telefonu (portrait). Szerokość robocza: 375–430px.
 
-| Element | Zaokrąglenie | Przykład |
-|---------|-------------|---------|
-| Główne karty | ~28px | Karty statystyk, wykresy, sidebar |
-| Ikony kategorii | ~20px | Kolorowe kwadraty z ikoną |
-| Przyciski | ~12px | Przyciski akcji, filtry |
-| Bardzo małe elementy | ~8px | Tagi, pola formularza |
+### Dolny pasek nawigacji
 
-**Żadnych ostrych kątów** w całym interfejsie. Duże zaokrąglenia dają poczucie miękkości i nowoczesności, nawiązując do stylu aplikacji mobilnych premium.
+Stały pasek na dole ekranu z 4 ikonami:
 
----
+```
+[Dashboard]  [Rachunki]  [Kalendarz]  [Ustawienia]
+```
 
-## 5. Cienie i głębia
+Centralny przycisk „+" (dodaj paragon) — wyróżniony kolorem głównym, lekko uniesiony ponad pasek — widoczny z każdego ekranu.
 
-Aplikacja używa subtelnnych, **rozmytych cieni** z lekkim odcieniem koloru tła. Efekt: karty wydają się lekko unosić nad tłem, ale nie w sposób krzykliwy.
+Aktywna zakładka podświetlona kolorem głównym. Pozostałe w kolorze pomocniczym.
 
-Zasady:
-- Cień jest zawsze niebieskawy (tintowany), nigdy czarny ani szary.
-- Małe krycie (4–8%) — ledwo widoczne, ale wyczuwalne.
-- Duże rozmycie — żadnych twardych krawędzi.
-- Hover na kartach (gdy myszka nad elementem) delikatnie podnosi cień.
+### Bezpieczne strefy
 
----
+- Górna strefa (status bar): 44–50px margines od góry.
+- Dolna strefa (home indicator na iPhone): 34px margines od dołu.
+- Boczne marginesy ekranu: 16–20px.
 
-## 6. Przestrzeń i rytm
+### Karty i sekcje
 
-Aplikacja oddycha. Elementy nie są ściśnięte razem.
-
-- **Karty mają duże wewnętrzne marginesy** (24–28px) — treść nigdy nie jest przy samej krawędzi.
-- **Odstępy między kartami** są konsekwentne (16px między małymi elementami, 24–32px między sekcjami).
-- **Sekcje są oddzielane przestrzenią**, nie liniami. Linie pojawia się rzadko i są bardzo jasne.
-
-Rytm wizualny jest **zróżnicowany** — nie wszystko ma ten sam rozmiar i odstępy. Ważniejsze elementy (statystyki, pierścień) mają więcej przestrzeni wokół siebie.
+- Karty z zaokrąglonymi rogami zajmują pełną szerokość ekranu (minus boczne marginesy).
+- Sekcje oddzielane przestrzenią (16–24px), nie liniami.
+- Przewijanie pionowe jako główny sposób poruszania się po ekranie.
+- Poziome przewijanie tylko w karuzelach kategorii.
 
 ---
 
-## 7. Ikony
+## 5. Zaokrąglenia i kształty
 
-Aplikacja używa biblioteki **Lucide** — minimalnych, jednolinijnych ikon konturowych. Każda kategoria ma dedykowaną ikonę:
+Żadnych ostrych kątów w całym interfejsie.
 
-- Jedzenie → koszyk sklepowy
-- Transport → samochód
-- Rozrywka → gamepad
-- Dom → dom
-- Zdrowie → serce z pulsem
-- Inne → paczka
-
-Ikony pojawiają się zawsze wewnątrz **kolorowego kwadratu** (kolor tła danej kategorii), nigdy same. Dzięki temu są widoczne nawet gdy bardzo małe.
+| Element | Zaokrąglenie |
+|---------|-------------|
+| Główne karty | 20–24px |
+| Ikony kategorii | 16px |
+| Przyciski | 12px |
+| Pola formularza | 10px |
+| Tagi i małe elementy | 8px |
+| Przycisk „+" (dodaj) | Okrąg (50%) |
 
 ---
 
-## 8. Nawigacja
+## 6. Cienie i głębia
 
-Nawigacja główna to **prosty tekst z podkreśleniem** — żadnych przycisków, zakładek ani pól. Aktywna sekcja podkreślona jest cienką kreską.
+W ciemnym motywie cienie są subtelne i fioletowo-niebieskie — karty lekko unoszą się nad tłem.
 
-Zasada: nawigacja jest w tle, nie przykuwa uwagi. Treść jest na pierwszym planie.
+- Cień zawsze tintowany kolorem tła (fioletowo-niebieski w dark, niebieski w light).
+- Małe krycie (6–10%).
+- Duże rozmycie — brak twardych krawędzi.
+- Dotknięcie elementu (tap) delikatnie zmienia jego jasność jako feedback.
+
+---
+
+## 7. Przestrzeń i rytm
+
+- Karty mają duże wewnętrzne marginesy: 20–24px.
+- Odstępy między kartami: 12–16px.
+- Ważniejsze elementy (statystyki, pierścień budżetu) mają więcej przestrzeni wokół siebie.
+- Sekcje oddzielane przestrzenią, nie liniami.
+
+---
+
+## 8. Ikony
+
+Biblioteka **Lucide** — minimalne, jednolinijkowe ikony konturowe.
+
+Ikony kategorii zawsze wewnątrz kolorowego kwadratu z zaokrąglonymi rogami (kolor tła danej kategorii) — nigdy same.
+
+Ikony nawigacji: konturowe w kolorze pomocniczym, wypełnione (lub podświetlone) gdy aktywne.
 
 ---
 
 ## 9. Wykresy i wizualizacje
 
-### Wykres słupkowy (historia 6 miesięcy)
+### Wykres słupkowy (historia miesięcy)
 
-- Słupki w kolorze głównym (niebieski indygo).
-- Po najechaniu myszką słupek rozjaśnia się, a nad nim pojawia się dymek z dokładną kwotą.
-- Etykiety miesięcy pod spodem, wartości osi pionowej po lewej.
-- Proste, bez siatki, bez ramki.
+- Słupki dwukolorowe — jak na screenie hb04: kolor główny + kolor akcentowy (dochody vs wydatki) lub jeden kolor dla samych wydatków.
+- Etykiety miesięcy pod spodem.
+- Dotknięcie słupka pokazuje dymek z dokładną kwotą.
+- Bez siatki, bez ramki.
 
 ### Pierścień budżetu
 
-- Okrągły wykres kołowy z okrągłym otworem w środku.
-- Kolor korala → ile z limitu zostało wydane.
-- Szare tło pierścienia → ile zostało.
-- Centrum: duża kwota + mała etykieta „zł" w kolorze akcentowym + napis „wydano".
-- Gdy wydatki przekraczają 90% limitu — kolor zmienia się na czerwony jako ostrzeżenie.
-- Pod pierścieniem: limit miesięczny i pozostała kwota.
+- Okrągły wykres z otworem w środku.
+- Kolor akcentowy (koral/fiolet) → ile z limitu wydano.
+- Ciemniejsze tło pierścienia → ile zostało.
+- Centrum: duża kwota + etykieta „wydano".
+- Gdy wydatki przekraczają 90% limitu — kolor zmienia się na czerwony.
 
 ---
 
-## 10. Tryb ciemny
+## 10. Interakcje dotykowe
 
-Aplikacja posiada wersję ciemną (dark mode), dostosowaną do preferencji systemowych przeglądarki lub urządzenia. W trybie ciemnym:
+Aplikacja jest obsługiwana dotykiem — wszystkie elementy interaktywne dostosowane do palca:
 
-- Tło zmienia się na głęboki granatowy.
-- Karty na ciemny niebieskoszary.
-- Kolory kategorii rozjaśniają się (większa widoczność na ciemnym tle).
-- Cienie stają się mniej widoczne (nie ma sensu robić cieni na ciemnym tle).
+- Minimalna powierzchnia dotyku: 44×44px.
+- Feedback na dotknięcie: delikatna zmiana jasności elementu (nie animacja układu).
+- Przeciąganie (swipe) w poziomie na liście rachunku → opcja usunięcia.
+- Przeciąganie w dół na ekranie głównym → odświeżenie danych.
 
 ---
 
 ## 11. Zasady, których nie łamiemy
 
 - Nigdy nie używamy czystej czerni (#000) ani czystej bieli (#fff) — zawsze tintowane.
-- Nigdy nie pokazujemy szarego tekstu na kolorowym tle — zawsze ciemniejszy odcień tego koloru.
+- Nigdy nie pokazujemy szarego tekstu na kolorowym tle.
 - Nie ma gradientów tekstu na kwotach ani nagłówkach.
-- Nie zagnieżdżamy kart wewnątrz kart (karty w kartach).
-- Nie używamy modali (okienek dialogowych) — zamiast tego ekspandowane sekcje lub osobne widoki.
+- Nie zagnieżdżamy kart wewnątrz kart.
+- Nie używamy wyskakujących okienek (modalów) — zamiast tego ekrany wsuwane od dołu lub osobne widoki.
 - Nie animujemy właściwości układu (szerokość, wysokość, marginesy) — tylko opacity i transform.
+- Każdy element interaktywny ma minimalną powierzchnię dotyku 44×44px.
