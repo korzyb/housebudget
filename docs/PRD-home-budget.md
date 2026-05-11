@@ -1,10 +1,8 @@
 # PRD — Home Budget: Inteligentny Asystent Budżetu Domowego
 
-**Wersja:** 2.0
+**Wersja:** 1.0
 **Data:** maj 2026
 **Status:** W trakcie rozwoju
-
-> **Zmiany względem v1.1:** Aplikacja zmieniona z desktopowej strony webowej na mobilną PWA (instalowaną na telefonie). Dodano logowanie i synchronizację danych w chmurze dla wielu użytkowników. Aparat telefonu jako główna metoda skanowania paragonów. Docelowy motyw ciemny (dark mode). Role użytkowników zaplanowane jako kolejny etap.
 
 ---
 
@@ -33,11 +31,13 @@ Główne scenariusze użycia:
 
 2. **Wgrywanie zdjęć i skanów** — alternatywnie użytkownik może wgrać zdjęcie lub skan paragonu z galerii telefonu (JPG, PNG, PDF). Dalszy proces jest identyczny jak przy aparacie.
 
+3. **Ręczne wprowadzanie wydatków** — użytkownik może ręcznie wprowadzić wydatek, podając kwotę, datę, kategorię i opcjonalnie opis. Na przykład transakcje gotówkowe, które nie mają paragonu lub automatyczne operacje kartą (subskrypcje, raty, itp)
+
 3. **Przechowywanie danych w chmurze** — wszystkie rachunki i dane są zapisywane na serwerze i dostępne z każdego zalogowanego urządzenia. Dane nie giną po wyczyszczeniu telefonu.
 
 4. **Logowanie i konta użytkowników** — każda osoba loguje się własnym adresem e-mail i hasłem. Dane są wspólne — każdy zalogowany użytkownik widzi i może dodawać rachunki do wspólnego budżetu.
 
-5. **Kategorie wydatków** — każdy rachunek przypisany jest do jednej z 6 wbudowanych kategorii (Jedzenie, Transport, Rozrywka, Dom, Zdrowie, Inne). Użytkownik może dodawać własne kategorie z wybraną ikoną i kolorem.
+5. **Kategorie wydatków** — każdy rachunek przypisany jest do jednej z 9 wbudowanych kategorii (Jedzenie, Transport, Rozrywka, Dom, Zdrowie, Dzieci, Subskrypcje, Wyjazdy, Inne). Użytkownik może dodawać własne kategorie z wybraną ikoną i kolorem.
 
 6. **Przegląd i statystyki** — ekran główny pokazuje wydatki dziś, w tym tygodniu i w bieżącym miesiącu, wykres historii za ostatnie miesiące oraz pierścień budżetu z informacją ile z miesięcznego limitu zostało już wydane.
 
@@ -85,7 +85,7 @@ Główne scenariusze użycia:
 - Wykres słupkowy — historia wydatków z ostatnich 6 miesięcy.
 - Karty kategorii — poziomy przewijany pasek z kwotami wydanymi w każdej kategorii w bieżącym miesiącu, uszeregowany od najwyższych.
 - Lista ostatnich rachunków — kilka ostatnich pozycji, klikalne, prowadzą do szczegółów.
-- Duży przycisk „Dodaj paragon" — zawsze widoczny, otwiera wybór: aparat lub galeria.
+- Duży przycisk „+" służący do dodania paragonu lub ręcznego wprowadzenia wydatku — zawsze widoczny, otwiera wybór: aparat lub galeria lub wpisanie ręcznie.
 
 ---
 
@@ -187,7 +187,9 @@ Zewnętrzna usługa przechowująca dane aplikacji w chmurze. Zapewnia logowanie 
 ## 7. Co jest poza zakresem obecnej wersji
 
 - **Role użytkowników** — np. administrator / członek rodziny z ograniczonym dostępem. Architektura kont jest przygotowana na wprowadzenie ról w przyszłości, ale w obecnej wersji wszyscy zalogowani użytkownicy mają identyczne uprawnienia.
+- **Kopiowanie wydatku** — można tworzyć nowy wydatek, kopiując istniejący (przydatne dla subskrypcji, rat itp), ale nie można edytować wydatku po jego zatwierdzeniu (planowane).
 - **Eksport danych** — do CSV lub PDF (planowane).
+- **Edycja kategorii** — dodawanie, usuwanie, zmiana ikon i kolorów (planowane).
 - **Powiadomienia push** — alert gdy budżet się kończy (planowane).
 - **Planowanie budżetu per kategoria** — określanie limitów dla każdej kategorii osobno (planowane).
 - **Wiele portfeli** — np. oddzielny budżet domowy i osobisty (planowane).

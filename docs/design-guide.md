@@ -1,9 +1,9 @@
 # Design Guide — Home Budget
 
-**Wersja:** 2.0
+**Wersja:** 1.0
 **Data:** maj 2026
 
-> **Zmiany względem v1.0:** Aplikacja zmieniona z desktopowej na mobilną PWA. Ciemny motyw (dark) jest teraz głównym i domyślnym. Jasny motyw pozostaje jako opcja do wyboru w ustawieniach. Nawigacja zmieniona z poziomego paska tekstowego na dolny pasek nawigacji (standard mobilny). Układ ekranów dostosowany do pionowego telefonu.
+Aplikacja mobilna PWA. Ciemny motyw (dark) jest głównym i domyślnym. Jasny motyw pozostaje jako opcja do wyboru w ustawieniach. Nawigacja w dolnym pasku nawigacji (standard mobilny). Układ ekranów dostosowany do pionowego telefonu.
 
 ---
 
