@@ -56,6 +56,9 @@ Kolory kategorii są spójne w obu motywach — w ciemnym nieco jaśniejsze dla 
 | 🎮 Rozrywka | Głęboki fiolet |
 | 🏠 Dom | Bursztynowy (ciepły żółto-pomarańczowy) |
 | 💊 Zdrowie | Koral (jak kolor akcentowy) |
+| 👶 Dzieci | Ciepły różowy |
+| ✈️ Wyjazdy | Turkusowy (jasny cyan) |
+| 📱 Subskrypcje | Chłodny szarofioletowy |
 | 📦 Inne | Szaroniebieski (stonowany, neutralny) |
 
 Każda kategoria ma też wersję tła (10–15% nasycenia) stosowaną w ikonkach i kafelkach.
