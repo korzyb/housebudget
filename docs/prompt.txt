@@ -1,0 +1,12 @@
+
+Zbudujmy aplikację do zarządzania budżetem domowym. 
+
+Dokładna specyfikacja tej aplikacji znajduje się w folderze docs, do którego możesz zaglądać i wykorzystać design guide oraz PRD. 
+
+Aplikacja ma zawierać widoki tak jak dashboard, kalendarz oraz dodawanie, edytowanie konkretnych rachunków,  które dodamy i też podział na kategorie. 
+
+Dokładnie skup się na tym, żeby odwzorować plan, który mamy opisany w docs
+
+Skupiamy się na aplikacji mobilnej, wykorzystującej bazę danych Supabase i logowanie. 
+
+
