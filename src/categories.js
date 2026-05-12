@@ -1,0 +1,55 @@
+// Helper do pracy z kategoriami. Lista wbudowanych kategorii jest "źródłem prawdy"
+// też w bazie (seed w docs/supabase-schema.sql) — ten plik daje fallback gdy baza
+// nie zwróci kategorii, plus helpery.
+
+import { store } from './store.js';
+
+export const BUILTIN_CATEGORIES = [
+  { slug: 'food',       name: 'Jedzenie',    icon: 'shopping-cart', color: '#34d399', bg: 'var(--cat-food-bg)' },
+  { slug: 'transport',  name: 'Transport',   icon: 'car',           color: '#6366f1', bg: 'var(--cat-transport-bg)' },
+  { slug: 'fun',        name: 'Rozrywka',    icon: 'gamepad-2',     color: '#8b5cf6', bg: 'var(--cat-fun-bg)' },
+  { slug: 'home',       name: 'Dom',         icon: 'home',          color: '#f59e0b', bg: 'var(--cat-home-bg)' },
+  { slug: 'health',     name: 'Zdrowie',     icon: 'heart-pulse',   color: '#f87171', bg: 'var(--cat-health-bg)' },
+  { slug: 'kids',       name: 'Dzieci',      icon: 'baby',          color: '#f472b6', bg: 'var(--cat-kids-bg)' },
+  { slug: 'travel',     name: 'Wyjazdy',     icon: 'plane',         color: '#22d3ee', bg: 'var(--cat-travel-bg)' },
+  { slug: 'subs',       name: 'Subskrypcje', icon: 'smartphone',    color: '#a78bfa', bg: 'var(--cat-subs-bg)' },
+  { slug: 'other',      name: 'Inne',        icon: 'package',       color: '#94a3b8', bg: 'var(--cat-other-bg)' },
+];
+
+export function bgForColor(hex) {
+  // Konwertuje hex na rgba(...,0.16). Używane gdy custom category nie ma bg.
+  if (!hex || !hex.startsWith('#')) return 'var(--surface-2)';
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, 0.16)`;
+}
+
+export function getCategory(idOrSlug) {
+  if (!idOrSlug) return null;
+  return store.categories.find(c => c.id === idOrSlug || c.slug === idOrSlug) || null;
+}
+
+export function categoryColor(c) {
+  if (!c) return 'var(--text-muted)';
+  return c.color || 'var(--text-muted)';
+}
+
+export function categoryBg(c) {
+  if (!c) return 'var(--surface-2)';
+  if (c.slug) {
+    const map = {
+      food: 'var(--cat-food-bg)',
+      transport: 'var(--cat-transport-bg)',
+      fun: 'var(--cat-fun-bg)',
+      home: 'var(--cat-home-bg)',
+      health: 'var(--cat-health-bg)',
+      kids: 'var(--cat-kids-bg)',
+      travel: 'var(--cat-travel-bg)',
+      subs: 'var(--cat-subs-bg)',
+      other: 'var(--cat-other-bg)',
+    };
+    if (map[c.slug]) return map[c.slug];
+  }
+  return bgForColor(c.color);
+}

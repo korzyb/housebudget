@@ -1,0 +1,20 @@
+{
+  "name": "Home Budget",
+  "short_name": "Budżet",
+  "description": "Mobilna aplikacja do zarządzania budżetem domowym",
+  "lang": "pl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a1830",
+  "theme_color": "#1a1830",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

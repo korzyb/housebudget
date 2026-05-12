@@ -1,0 +1,14 @@
+{
+  "name": "housebudget",
+  "version": "0.1.0",
+  "description": "Home Budget — mobilna PWA do zarządzania budżetem domowym",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "http-server -o -p 8080 -c-1",
+    "dev": "http-server -p 8080 -c-1 -a 0.0.0.0"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

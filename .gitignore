@@ -1,0 +1,9 @@
+node_modules/
+config.local.js
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# Lokalne screenshoty referencyjne — nie pushujemy do repo
+docs/hb*.png

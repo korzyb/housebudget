@@ -1,0 +1,40 @@
+Oto podsumowanie wszystkiego co ustaliliśmy:
+
+## Czym jest aplikacja
+- Mobilna PWA do śledzenia budżetu domowego
+- Instalowana na telefonie z własną ikoną (bez sklepu Play)
+- Dla 2 użytkowników z synchronizacją danych
+
+## Stack technologiczny
+- **HTML + CSS + JavaScript** — czysty, bez frameworków
+- **Supabase** — baza danych w chmurze + logowanie użytkowników
+- **Google Gemini API** — analiza zdjęć paragonów przez AI
+- **GitHub Pages** — darmowy hosting aplikacji
+
+## Narzędzia
+- **Google Antigravity** — środowisko do pisania kodu (z AI)
+- **Git** — śledzenie zmian w kodzie
+- **GitHub** — repozytorium kodu + hosting (GitHub Pages)
+- **Node.js + npm** — lokalny serwer testowy podczas developmentu
+
+## Konta i serwisy (wszystkie darmowe)
+- ✅ GitHub — kod + hosting
+- ✅ Supabase — baza danych + logowanie
+- ✅ Google Gemini API — analiza paragonów (własny klucz API)
+
+## Proces pracy
+1. Piszesz kod lokalnie w Antigravity
+2. Testujesz w przeglądarce na komputerze (`localhost`)
+3. Testujesz na telefonie przez WiFi (ten sam adres IP)
+4. Wysyłasz zmiany do GitHub (`git push`)
+5. GitHub Pages automatycznie aktualizuje aplikację pod Twoim URL
+6. Wchodzisz przez Chrome na telefonie → „Dodaj do ekranu głównego"
+
+## Dokumentacja gotowa
+- ✅ PRD v2.0 — opis funkcji i ekranów
+- ✅ Design Guide v2.0 — wygląd, kolory, ikony, układ mobilny
+
+## Co jeszcze przed startem developmentu
+- Założyć konto Supabase (jeśli jeszcze nie zrobione)
+- Utworzyć repozytorium na GitHub
+- Sklonować repo lokalnie i otworzyć w Antigravity

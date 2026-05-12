@@ -1,0 +1,141 @@
+/* Design tokens — paleta dark+light, typografia, spacing, radius z Design Guide */
+
+:root {
+  /* Typografia */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+  --fs-hero: 30px;
+  --fs-amount: 16px;
+  --fs-section: 12px;
+  --fs-label: 11px;
+  --fs-row: 14px;
+  --fs-body: 15px;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semi: 600;
+  --fw-bold: 700;
+  --fw-black: 800;
+
+  /* Spacing */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 32px;
+  --sp-8: 40px;
+
+  /* Radius */
+  --r-sm: 8px;
+  --r-md: 10px;
+  --r-btn: 12px;
+  --r-icon: 16px;
+  --r-card: 22px;
+  --r-pill: 999px;
+
+  /* Layout */
+  --max-w: 430px;
+  --side: 16px;
+  --top-safe: max(env(safe-area-inset-top), 12px);
+  --bottom-safe: max(env(safe-area-inset-bottom), 16px);
+  --nav-h: 64px;
+
+  /* Kategorie — kolory spójne między motywami */
+  --cat-food: #34d399;        /* szmaragdowy ziel */
+  --cat-transport: #6366f1;   /* indygo */
+  --cat-fun: #8b5cf6;         /* głęboki fiolet */
+  --cat-home: #f59e0b;        /* bursztynowy */
+  --cat-health: #f87171;      /* koral */
+  --cat-kids: #f472b6;        /* ciepły różowy */
+  --cat-travel: #22d3ee;      /* turkusowy */
+  --cat-subs: #a78bfa;        /* szarofioletowy */
+  --cat-other: #94a3b8;       /* szaroniebieski */
+
+  /* Tła kategorii (przyciemnione na dark, rozjaśnione na light — definiowane per-theme) */
+}
+
+/* ============ MOTYW CIEMNY (domyślny) ============ */
+:root,
+:root[data-theme="dark"] {
+  --bg: #1a1830;
+  --bg-elev: #221f3a;
+  --surface: #252339;
+  --surface-2: #2d2b45;
+  --border: rgba(255, 255, 255, 0.06);
+
+  --primary: #6366f1;
+  --primary-hover: #818cf8;
+  --primary-ink: #f0f4ff;
+
+  --accent: #f87171;
+  --accent-hover: #fb8e8e;
+
+  --text: #f0f4ff;
+  --text-muted: #8b8fa3;
+  --text-dim: #5a5e75;
+
+  --danger: #ef4444;
+  --success: #34d399;
+  --warning: #f59e0b;
+
+  /* Cienie — fioletowo-niebieski tint, niska opacity, duże blur */
+  --shadow-sm: 0 2px 8px rgba(20, 18, 50, 0.4);
+  --shadow-md: 0 8px 24px rgba(20, 18, 50, 0.45);
+  --shadow-lg: 0 16px 40px rgba(20, 18, 50, 0.5);
+
+  /* Tła kategorii — przyciemnione (do ikon, kafli) */
+  --cat-food-bg: rgba(52, 211, 153, 0.16);
+  --cat-transport-bg: rgba(99, 102, 241, 0.18);
+  --cat-fun-bg: rgba(139, 92, 246, 0.18);
+  --cat-home-bg: rgba(245, 158, 11, 0.16);
+  --cat-health-bg: rgba(248, 113, 113, 0.16);
+  --cat-kids-bg: rgba(244, 114, 182, 0.16);
+  --cat-travel-bg: rgba(34, 211, 238, 0.16);
+  --cat-subs-bg: rgba(167, 139, 250, 0.16);
+  --cat-other-bg: rgba(148, 163, 184, 0.16);
+
+  color-scheme: dark;
+}
+
+/* ============ MOTYW JASNY ============ */
+:root[data-theme="light"] {
+  --bg: #f3f4f8;
+  --bg-elev: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f8f9fc;
+  --border: rgba(30, 35, 70, 0.08);
+
+  --primary: #4f46e5;
+  --primary-hover: #6366f1;
+  --primary-ink: #ffffff;
+
+  --accent: #ef4444;
+  --accent-hover: #f87171;
+
+  --text: #1a1f3a;
+  --text-muted: #6b7090;
+  --text-dim: #a1a5b8;
+
+  --danger: #dc2626;
+  --success: #059669;
+  --warning: #d97706;
+
+  --shadow-sm: 0 2px 8px rgba(30, 35, 70, 0.06);
+  --shadow-md: 0 8px 24px rgba(30, 35, 70, 0.08);
+  --shadow-lg: 0 16px 40px rgba(30, 35, 70, 0.1);
+
+  /* Tła kategorii — jaśniejsze */
+  --cat-food-bg: rgba(52, 211, 153, 0.14);
+  --cat-transport-bg: rgba(99, 102, 241, 0.14);
+  --cat-fun-bg: rgba(139, 92, 246, 0.14);
+  --cat-home-bg: rgba(245, 158, 11, 0.14);
+  --cat-health-bg: rgba(248, 113, 113, 0.14);
+  --cat-kids-bg: rgba(244, 114, 182, 0.14);
+  --cat-travel-bg: rgba(34, 211, 238, 0.14);
+  --cat-subs-bg: rgba(167, 139, 250, 0.14);
+  --cat-other-bg: rgba(148, 163, 184, 0.14);
+
+  color-scheme: light;
+}

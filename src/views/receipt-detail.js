@@ -1,0 +1,268 @@
+import { h, toast } from '../dom.js';
+import { icon } from '../icons.js';
+import { store } from '../store.js';
+import { saveReceipt, deleteReceipt } from '../supabase.js';
+import { navigate } from '../router.js';
+import { bottomNav } from '../components/bottom-nav.js';
+import { categoryIconBox } from '../components/category-chip.js';
+import { getCategory } from '../categories.js';
+import { formatPLN, formatDate, parsePLN, toISODate } from '../format.js';
+
+export function renderReceiptDetail({ id }) {
+  // Stan formularza
+  let model;
+  let existing = null;
+
+  if (id) {
+    existing = store.receipts.find(r => r.id === id);
+    if (!existing) {
+      toast('Nie znaleziono rachunku', 'error');
+      navigate('/receipts');
+      return h('div');
+    }
+    model = clone(existing);
+  } else if (store.draftReceipt) {
+    model = clone(store.draftReceipt);
+    model.photo_url = model.photo_url || null;
+    store.clearDraftReceipt();
+  } else {
+    model = {
+      store_name: '',
+      purchase_date: toISODate(new Date()),
+      category_id: defaultCategoryId(),
+      amount: 0,
+      description: '',
+      photo_url: null,
+      items: [],
+    };
+  }
+
+  const root = h('div', { class: 'view detail-view' });
+  let saving = false;
+
+  function rerender() {
+    root.replaceChildren();
+    const total = model.items.length
+      ? model.items.reduce((s, x) => s + (Number(x.price) || 0), 0)
+      : Number(model.amount) || 0;
+
+    const cat = getCategory(model.category_id);
+
+    root.appendChild(h('div', { class: 'view-header' }, [
+      h('button', { class: 'back-link', type: 'button', onClick: () => history.back() }, [icon('arrow-left'), 'Wróć']),
+      h('h1', {}, existing ? 'Edytuj rachunek' : 'Nowy rachunek'),
+      h('div', { style: { width: '60px' } }),
+    ]));
+
+    // Photo (jeśli jest)
+    if (model.photo_url) {
+      root.appendChild(h('div', {
+        class: 'detail-photo',
+        style: { backgroundImage: `url(${model.photo_url})` },
+      }));
+    }
+
+    // Sklep
+    root.appendChild(h('div', { class: 'field', style: { marginBottom: '12px' } }, [
+      h('label', {}, 'Nazwa sklepu'),
+      h('input', {
+        class: 'input',
+        type: 'text',
+        value: model.store_name || '',
+        placeholder: 'np. Biedronka',
+        onInput: (e) => { model.store_name = e.target.value; },
+      }),
+    ]));
+
+    // Data
+    root.appendChild(h('div', { class: 'field', style: { marginBottom: '12px' } }, [
+      h('label', {}, 'Data zakupu'),
+      h('input', {
+        class: 'input',
+        type: 'date',
+        value: model.purchase_date,
+        onInput: (e) => { model.purchase_date = e.target.value; },
+      }),
+    ]));
+
+    // Kategoria — siatka chipów
+    root.appendChild(h('div', { class: 'field', style: { marginBottom: '12px' } }, [
+      h('label', {}, 'Kategoria'),
+      categoryGrid(model.category_id, (id) => {
+        model.category_id = id;
+        rerender();
+      }),
+    ]));
+
+    // Kwota (lub łączna z pozycji)
+    const amountField = h('div', { class: 'field', style: { marginBottom: '12px' } }, [
+      h('label', {}, model.items.length ? 'Łączna kwota (z pozycji)' : 'Kwota'),
+      h('div', { class: 'input-group' }, [
+        h('input', {
+          class: 'input',
+          type: 'text',
+          inputmode: 'decimal',
+          value: model.items.length ? formatPLN(total).replace(/\s*zł\s*/, '') : (model.amount || ''),
+          disabled: !!model.items.length,
+          onInput: (e) => { model.amount = parsePLN(e.target.value); },
+        }),
+        h('div', { class: 'addon' }, 'zł'),
+      ]),
+    ]);
+    root.appendChild(amountField);
+
+    // Pozycje (opcjonalnie)
+    const itemsSection = h('div', { style: { marginBottom: '16px' } }, [
+      h('div', { class: 'row', style: { justifyContent: 'space-between', marginBottom: '8px' } }, [
+        h('div', { class: 't-section' }, `Pozycje (${model.items.length})`),
+        h('button', {
+          class: 'btn btn-ghost',
+          type: 'button',
+          style: { minHeight: '36px', padding: '8px 12px' },
+          onClick: () => {
+            model.items.push({ name: '', price: 0 });
+            rerender();
+          },
+        }, [icon('plus', { size: 16 }), 'Dodaj']),
+      ]),
+      h('div', { class: 'items-list' },
+        model.items.map((it, i) => h('div', { class: 'item-row' }, [
+          h('input', {
+            class: 'input',
+            type: 'text',
+            placeholder: 'Nazwa pozycji',
+            value: it.name || '',
+            onInput: (e) => { model.items[i].name = e.target.value; },
+          }),
+          h('div', { class: 'input-group' }, [
+            h('input', {
+              class: 'input',
+              type: 'text',
+              inputmode: 'decimal',
+              placeholder: '0,00',
+              value: it.price || '',
+              onInput: (e) => { model.items[i].price = parsePLN(e.target.value); },
+              onBlur: () => rerender(),
+            }),
+            h('div', { class: 'addon' }, 'zł'),
+          ]),
+          h('button', {
+            class: 'btn btn-icon btn-danger',
+            type: 'button',
+            onClick: () => { model.items.splice(i, 1); rerender(); },
+          }, icon('x', { size: 18 })),
+        ])),
+      ),
+    ]);
+    root.appendChild(itemsSection);
+
+    // Opis
+    root.appendChild(h('div', { class: 'field', style: { marginBottom: '20px' } }, [
+      h('label', {}, 'Opis (opcjonalny)'),
+      h('textarea', {
+        class: 'input',
+        rows: '2',
+        placeholder: 'Notatka',
+        onInput: (e) => { model.description = e.target.value; },
+      }, model.description || ''),
+    ]));
+
+    // Akcje
+    const saveBtn = h('button', {
+      class: 'btn btn-primary btn-block',
+      type: 'button',
+      onClick: async () => {
+        if (saving) return;
+        if (!model.category_id) { toast('Wybierz kategorię', 'error'); return; }
+        if (!model.purchase_date) { toast('Wybierz datę', 'error'); return; }
+        const total = model.items.length
+          ? model.items.reduce((s, x) => s + (Number(x.price) || 0), 0)
+          : Number(model.amount) || 0;
+        if (!total || total <= 0) { toast('Wpisz kwotę większą od zera', 'error'); return; }
+
+        saving = true;
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Zapisuję…';
+        try {
+          const payload = {
+            id: existing?.id,
+            store_name: model.store_name?.trim() || null,
+            purchase_date: model.purchase_date,
+            category_id: model.category_id,
+            amount: total,
+            description: model.description?.trim() || null,
+            photo_url: model.photo_url || null,
+            items: model.items.filter(it => it.name || it.price),
+          };
+          await saveReceipt(payload);
+          toast(existing ? 'Zaktualizowano' : 'Zapisano', 'success');
+          navigate('/receipts');
+        } catch (err) {
+          toast(err.message || 'Błąd zapisu', 'error');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Zapisz';
+        } finally {
+          saving = false;
+        }
+      },
+    }, 'Zapisz');
+    root.appendChild(saveBtn);
+
+    if (existing) {
+      root.appendChild(h('button', {
+        class: 'btn btn-danger btn-block',
+        type: 'button',
+        style: { marginTop: '8px' },
+        onClick: async () => {
+          if (!confirm('Usunąć ten rachunek?')) return;
+          try {
+            await deleteReceipt(existing.id);
+            toast('Usunięto', 'success');
+            navigate('/receipts');
+          } catch (err) {
+            toast(err.message || 'Błąd usuwania', 'error');
+          }
+        },
+      }, 'Usuń rachunek'));
+    }
+  }
+
+  rerender();
+
+  return h('div', {}, [root, bottomNav()]);
+}
+
+function categoryGrid(selectedId, onPick) {
+  return h('div', {
+    style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' },
+  }, store.categories.map(c => {
+    const active = c.id === selectedId;
+    return h('button', {
+      class: 'tap',
+      type: 'button',
+      style: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '4px',
+        padding: '10px 6px',
+        background: active ? 'var(--surface-2)' : 'var(--surface)',
+        border: active ? '2px solid var(--primary)' : '2px solid transparent',
+        borderRadius: '14px',
+        cursor: 'pointer',
+        color: 'var(--text)',
+      },
+      onClick: () => onPick(c.id),
+    }, [
+      categoryIconBox(c, { size: 36 }),
+      h('span', { style: { fontSize: '11px', fontWeight: '500' } }, c.name),
+    ]);
+  }));
+}
+
+function defaultCategoryId() {
+  const food = store.categories.find(c => c.slug === 'food');
+  return food?.id || store.categories[0]?.id || null;
+}
+
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
