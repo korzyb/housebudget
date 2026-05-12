@@ -1,6 +1,6 @@
 // Service worker: app-shell cache. Bumpnij wersję przy każdym deploy.
 
-const VERSION = 'v3';
+const VERSION = 'v4';
 const SHELL_CACHE = `hb-shell-${VERSION}`;
 
 const SHELL = [
