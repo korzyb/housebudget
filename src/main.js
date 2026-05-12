@@ -72,10 +72,8 @@ function configMissingScreen() {
     ]),
     h('div', { class: 'card' }, [
       h('p', { style: { marginBottom: '12px', fontSize: '14px' } }, [
-        'Skopiuj ',
-        h('code', {}, 'config.example.js'),
-        ' jako ',
-        h('code', {}, 'config.local.js'),
+        'Otwórz plik ',
+        h('code', {}, 'config.js'),
         ' i wpisz w nim:',
       ]),
       h('ul', { style: { paddingLeft: '20px', fontSize: '13px', color: 'var(--text-muted)' } }, [

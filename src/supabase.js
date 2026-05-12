@@ -9,10 +9,10 @@ let configError = null;
 
 export async function initSupabase() {
   try {
-    const mod = await import('../config.local.js');
+    const mod = await import('../config.js');
     const { SUPABASE_URL, SUPABASE_ANON_KEY } = mod;
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY || SUPABASE_URL.includes('YOUR-')) {
-      throw new Error('Brak prawdziwych kluczy w config.local.js');
+      throw new Error('Brak prawdziwych kluczy w config.js');
     }
     supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: true, autoRefreshToken: true, storage: localStorage },

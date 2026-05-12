@@ -21,11 +21,16 @@ Mobilna PWA do zarządzania budżetem domowym. Skanowanie paragonów przez AI (G
 
 ### 2. Konfiguracja kluczy
 
-```bash
-cp config.example.js config.local.js
+Otwórz `config.js` i wklej swoje wartości z Supabase:
+
+```js
+export const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+export const SUPABASE_ANON_KEY = 'eyJ...';
 ```
 
-Otwórz `config.local.js` i wklej wartości z Supabase. Plik jest w `.gitignore` — nie trafi do repo.
+**Uwaga o bezpieczeństwie:** `SUPABASE_URL` i `SUPABASE_ANON_KEY` są publiczne z założenia
+(każda frontendowa apka Supabase ma je wbite w bundle). Bezpieczeństwo zapewniają polityki RLS
+w bazie. Nigdy nie wklejaj do `config.js` `service_role` key — ten ma pełen dostęp do bazy.
 
 ### 3. Klucz Gemini (opcjonalny — bez niego OCR paragonów nie działa, ręczne dodawanie działa)
 
