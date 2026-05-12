@@ -6,7 +6,7 @@ import { BUILTIN_CATEGORIES } from './categories.js';
 const GEMINI_KEY = 'gemini_api_key';
 // Fast, multimodal, dostępny na darmowym tierze.
 // Inne opcje: 'gemini-2.5-flash-lite' (mniejszy/szybszy/tańszy), 'gemini-1.5-flash' (starszy, też darmowy).
-const MODEL = 'gemini-2.5-flash';
+const MODEL = 'gemini-2.5-flash-lite';
 const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
 export function hasGeminiKey() {

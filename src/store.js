@@ -9,6 +9,8 @@ const state = {
   loading: false,
   // Tymczasowy bufor po OCR — używany przez camera → receipt-detail
   draftReceipt: null,
+  // Zdjęcie wybrane przez user-gesture w add-sheet → camera/process
+  pendingPhoto: null,
 };
 
 const listeners = new Set();
@@ -59,6 +61,9 @@ export const store = {
   },
   setDraftReceipt(r) { state.draftReceipt = r; emit(); },
   clearDraftReceipt() { state.draftReceipt = null; emit(); },
+  setPendingPhoto(b) { state.pendingPhoto = b; emit(); },
+  takePendingPhoto() { const b = state.pendingPhoto; state.pendingPhoto = null; return b; },
+  get pendingPhoto() { return state.pendingPhoto; },
 
   on(fn) { listeners.add(fn); return () => listeners.delete(fn); },
 };

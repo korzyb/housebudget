@@ -8,7 +8,8 @@ import { toISODate } from '../format.js';
 import { getCategory } from '../categories.js';
 
 export function renderCamera() {
-  // ?source=gallery → omiń getUserMedia
+  // ?source=process → blob już wybrany w add-sheet, czytamy z store i przetwarzamy
+  // ?source=gallery → fallback gdy aparat zawiódł, otwieramy file input
   const params = new URLSearchParams((location.hash.split('?')[1] || ''));
   const source = params.get('source');
 
@@ -27,24 +28,38 @@ export function renderCamera() {
 
   window.addEventListener('hashchange', () => { canceled = true; stopStream(); }, { once: true });
 
+  if (source === 'process') {
+    // Blob już mamy w store (z add-sheet → gallery picker).
+    const blob = store.takePendingPhoto();
+    if (!blob) {
+      // Refresh strony zgubił blob — wróć do dashboard
+      navigate('/dashboard');
+      return root;
+    }
+    // processBlob sam doda overlay z "Wysyłanie zdjęcia…"
+    Promise.resolve().then(() => processBlob(blob));
+    return root;
+  }
+
   if (source === 'gallery' || !navigator.mediaDevices?.getUserMedia) {
-    // Fallback: file input
+    // Fallback: file input (gdy aparat zawiódł — rzadko używany)
     const input = h('input', {
       type: 'file',
       accept: 'image/*,application/pdf',
-      style: { display: 'none' },
+      style: { position: 'fixed', left: '-9999px', top: '-9999px' },
       onChange: async (e) => {
         const file = e.target.files?.[0];
         if (!file) { history.back(); return; }
         await processBlob(file);
       },
     });
-    setTimeout(() => input.click(), 50);
     root.appendChild(input);
     root.appendChild(h('div', { class: 'camera-loading' }, [
       h('div', { class: 'spinner-lg spinner' }),
       h('div', {}, 'Wybierz zdjęcie z galerii…'),
     ]));
+    // Pojedyncze rAF żeby DOM był zamontowany
+    requestAnimationFrame(() => requestAnimationFrame(() => input.click()));
     return root;
   }
 
