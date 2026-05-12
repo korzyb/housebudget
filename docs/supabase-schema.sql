@@ -131,16 +131,19 @@ on conflict (slug) do update set
   is_builtin = excluded.is_builtin;
 
 -- ============ STORAGE BUCKET ============
--- Bucket `receipts` musisz utworzyć ręcznie w panelu Storage (public read).
--- Po utworzeniu wklej te policies w Storage → Policies → receipts:
---
--- INSERT (authenticated):
---   bucket_id = 'receipts' and auth.role() = 'authenticated'
---
--- SELECT (public):
---   bucket_id = 'receipts'
---
--- DELETE (authenticated):
---   bucket_id = 'receipts' and auth.role() = 'authenticated'
+-- Bucket `receipts` utwórz ręcznie w panelu Storage → New bucket → Public: ON.
+-- Po utworzeniu uruchom poniższy SQL żeby ustawić polityki:
+
+drop policy if exists "receipts_public_select" on storage.objects;
+create policy "receipts_public_select" on storage.objects
+  for select to public using (bucket_id = 'receipts');
+
+drop policy if exists "receipts_auth_insert" on storage.objects;
+create policy "receipts_auth_insert" on storage.objects
+  for insert to authenticated with check (bucket_id = 'receipts');
+
+drop policy if exists "receipts_auth_delete" on storage.objects;
+create policy "receipts_auth_delete" on storage.objects
+  for delete to authenticated using (bucket_id = 'receipts');
 
 -- Gotowe. Po uruchomieniu skopiuj Project URL i anon key do config.local.js.

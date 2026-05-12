@@ -168,11 +168,23 @@ export async function deleteReceipt(id) {
 export async function uploadReceiptPhoto(blob, ext = 'jpg') {
   if (!supabase || !store.user) throw new Error('Brak sesji');
   const filename = `${store.user.id}/${crypto.randomUUID()}.${ext}`;
-  const { error } = await supabase.storage
+  console.log('[upload] start', { filename, size: blob.size, type: blob.type });
+
+  const uploadPromise = supabase.storage
     .from('receipts')
     .upload(filename, blob, { contentType: blob.type || 'image/jpeg', upsert: false });
-  if (error) throw error;
+
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Upload timeout (30s). Sprawdź bucket "receipts" i polityki Storage w Supabase.')), 30000)
+  );
+
+  const result = await Promise.race([uploadPromise, timeoutPromise]);
+  console.log('[upload] result', result);
+  if (result.error) {
+    throw new Error(`Storage ${result.error.statusCode || ''}: ${result.error.message || JSON.stringify(result.error)}`);
+  }
   const { data } = supabase.storage.from('receipts').getPublicUrl(filename);
+  console.log('[upload] publicUrl', data.publicUrl);
   return data.publicUrl;
 }
 
