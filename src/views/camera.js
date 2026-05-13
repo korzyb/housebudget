@@ -12,23 +12,36 @@ import { getCategory } from '../categories.js';
 export async function processReceiptBlob(blob) {
   if (!blob) return;
 
-  const overlay = createBodyOverlay('Wysyłanie zdjęcia…');
+  const overlay = createBodyOverlay('Przygotowuję zdjęcie…');
   try {
-    // 1) upload
+    // 0) Resize/kompresja — telefony robią 3-5MB zdjęcia, to za dużo do uploadu i OCR.
+    // Limity: max 1600px po dłuższym boku, JPEG q=0.85. Typowo 4MB → ~300KB.
+    // Pomijamy gdy plik <500KB albo nie da się załadować (np. PDF).
+    let uploadBlob = blob;
+    if (blob.size > 500_000 && blob.type.startsWith('image/')) {
+      try {
+        uploadBlob = await compressImage(blob, 1600, 0.85);
+      } catch (err) {
+        console.error('[process] Compression failed, using original:', err);
+      }
+    }
+
+    // 1) upload (mniejsza wersja)
+    overlay.setText('Wysyłanie zdjęcia…');
     let photoUrl = null;
     try {
-      photoUrl = await uploadReceiptPhoto(blob, blobExt(blob));
+      photoUrl = await uploadReceiptPhoto(uploadBlob, blobExt(uploadBlob));
     } catch (err) {
       console.error('[process] Upload failed:', err);
       toast('Upload zdjęcia: ' + err.message, 'error', 8000);
     }
 
-    // 2) Gemini
+    // 2) Gemini — wysyłamy też skompresowaną (mniej tokenów, szybciej, AI sobie radzi)
     let aiResult = null;
     if (hasGeminiKey()) {
       overlay.setText('AI czyta paragon…');
       try {
-        aiResult = await analyzeReceipt(blob);
+        aiResult = await analyzeReceipt(uploadBlob);
       } catch (err) {
         console.error('[process] Gemini error:', err);
         toast('AI: ' + err.message, 'error', 10000);
@@ -43,6 +56,37 @@ export async function processReceiptBlob(blob) {
     navigate('/receipt/new');
   } finally {
     overlay.remove();
+  }
+}
+
+// Skompresuj zdjęcie: max maxSide px po dłuższym boku, JPEG q.
+async function compressImage(blob, maxSide, quality) {
+  const url = URL.createObjectURL(blob);
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = reject;
+      i.src = url;
+    });
+
+    const longest = Math.max(img.naturalWidth, img.naturalHeight);
+    const scale = longest > maxSide ? maxSide / longest : 1;
+    const w = Math.round(img.naturalWidth * scale);
+    const h = Math.round(img.naturalHeight * scale);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+
+    const out = await new Promise((resolve, reject) => {
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/jpeg', quality);
+    });
+    return out;
+  } finally {
+    URL.revokeObjectURL(url);
   }
 }
 

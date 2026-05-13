@@ -135,27 +135,29 @@ export async function loadReceipts() {
 export async function saveReceipt(receipt) {
   if (!supabase) return null;
   const payload = { ...receipt, created_by: receipt.created_by || store.user?.id };
-  if (payload.id) {
-    const { id, created_at, created_by, ...patch } = payload;
-    const { data, error } = await supabase
-      .from('receipts')
-      .update(patch)
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) throw error;
-    store.upsertReceipt(data);
-    return data;
-  } else {
-    const { data, error } = await supabase
-      .from('receipts')
-      .insert(payload)
-      .select()
-      .single();
-    if (error) throw error;
-    store.upsertReceipt(data);
-    return data;
-  }
+
+  // Świadomie BEZ .single() — w niektórych okolicznościach SDK nie zwalnia promise
+  // (request kończy się 200 server-side, ale klient wisi). Bierzemy pierwszy element ręcznie.
+  const op = payload.id
+    ? (() => {
+        const { id, created_at, created_by, ...patch } = payload;
+        return supabase.from('receipts').update(patch).eq('id', id).select();
+      })()
+    : supabase.from('receipts').insert(payload).select();
+
+  const { data: rows, error } = await withTimeout(op, 20000, 'Zapis rachunku trwa za długo (>20s). Sprawdź połączenie.');
+  if (error) throw error;
+  const data = Array.isArray(rows) ? rows[0] : rows;
+  if (data) store.upsertReceipt(data);
+  return data;
+}
+
+// Helper: timeout dla Promise SDK Supabase (nie ma natywnego AbortController na SDK calls).
+function withTimeout(promise, ms, message) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms)),
+  ]);
 }
 
 export async function deleteReceipt(id) {
