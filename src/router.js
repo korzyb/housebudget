@@ -52,7 +52,6 @@ export function currentPath() {
 export async function render() {
   if (renderingLock) return;
   renderingLock = true;
-  console.log('[router] render START', { hash: location.hash, stack: new Error().stack });
   try {
     let raw = currentPath();
     if (!raw || raw === '/') {

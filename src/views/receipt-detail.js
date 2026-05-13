@@ -13,8 +13,6 @@ export function renderReceiptDetail({ id }) {
   let model;
   let existing = null;
 
-  console.log('[receipt-detail] open', { id, draftReceipt: store.draftReceipt });
-
   if (id) {
     existing = store.receipts.find(r => r.id === id);
     if (!existing) {
@@ -27,7 +25,6 @@ export function renderReceiptDetail({ id }) {
     model = clone(store.draftReceipt);
     model.photo_url = model.photo_url || null;
     store.clearDraftReceipt();
-    console.log('[receipt-detail] used draft, model:', model);
   } else {
     model = {
       store_name: '',
@@ -38,7 +35,6 @@ export function renderReceiptDetail({ id }) {
       photo_url: null,
       items: [],
     };
-    console.log('[receipt-detail] no draft, empty model');
   }
 
   const root = h('div', { class: 'view detail-view' });

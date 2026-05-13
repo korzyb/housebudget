@@ -11,7 +11,6 @@ import { getCategory } from '../categories.js';
 // Pokazuje overlay w body, uploaduje, woła Gemini, ustawia draft i nawiguje do receipt-detail.
 export async function processReceiptBlob(blob) {
   if (!blob) return;
-  console.log('[process] start', { size: blob.size, type: blob.type });
 
   const overlay = createBodyOverlay('Wysyłanie zdjęcia…');
   try {
@@ -19,7 +18,6 @@ export async function processReceiptBlob(blob) {
     let photoUrl = null;
     try {
       photoUrl = await uploadReceiptPhoto(blob, blobExt(blob));
-      console.log('[process] upload OK', photoUrl);
     } catch (err) {
       console.error('[process] Upload failed:', err);
       toast('Upload zdjęcia: ' + err.message, 'error', 8000);
@@ -31,7 +29,6 @@ export async function processReceiptBlob(blob) {
       overlay.setText('AI czyta paragon…');
       try {
         aiResult = await analyzeReceipt(blob);
-        console.log('[process] AI result', aiResult);
       } catch (err) {
         console.error('[process] Gemini error:', err);
         toast('AI: ' + err.message, 'error', 10000);
@@ -42,7 +39,6 @@ export async function processReceiptBlob(blob) {
 
     // 3) Draft → przejście do receipt-detail
     const draft = buildDraft(aiResult, photoUrl);
-    console.log('[process] draft', draft);
     store.setDraftReceipt(draft);
     navigate('/receipt/new');
   } finally {
