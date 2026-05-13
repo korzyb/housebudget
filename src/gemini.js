@@ -4,10 +4,28 @@
 import { BUILTIN_CATEGORIES } from './categories.js';
 
 const GEMINI_KEY = 'gemini_api_key';
-// Fast, multimodal, dostępny na darmowym tierze.
-// Inne opcje: 'gemini-2.5-flash-lite' (mniejszy/szybszy/tańszy), 'gemini-1.5-flash' (starszy, też darmowy).
-const MODEL = 'gemini-2.5-flash-lite';
-const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+const GEMINI_MODEL_KEY = 'gemini_model';
+
+// Dostępne modele — wybierane w ustawieniach. Wszystkie obsługują vision.
+export const GEMINI_MODELS = [
+  { id: 'gemini-2.5-flash-lite', label: 'Flash Lite (najszybszy, darmowy)', hint: 'Wystarcza do typowych paragonów' },
+  { id: 'gemini-2.5-flash', label: 'Flash (lepsza dokładność)', hint: 'Płatny tier, większe limity' },
+  { id: 'gemini-2.5-pro', label: 'Pro (najlepszy, wolny)', hint: 'Płatny, najlepszy w trudnych obrazkach' },
+];
+
+export const DEFAULT_MODEL = GEMINI_MODELS[0].id;
+
+export function getGeminiModel() {
+  const stored = localStorage.getItem(GEMINI_MODEL_KEY);
+  if (stored && GEMINI_MODELS.some(m => m.id === stored)) return stored;
+  return DEFAULT_MODEL;
+}
+
+export function setGeminiModel(modelId) {
+  if (GEMINI_MODELS.some(m => m.id === modelId)) {
+    localStorage.setItem(GEMINI_MODEL_KEY, modelId);
+  }
+}
 
 export function hasGeminiKey() {
   return !!localStorage.getItem(GEMINI_KEY);
@@ -59,7 +77,9 @@ export async function analyzeReceipt(blob) {
     },
   };
 
-  const res = await fetch(`${ENDPOINT}?key=${encodeURIComponent(key)}`, {
+  const model = getGeminiModel();
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const res = await fetch(`${endpoint}?key=${encodeURIComponent(key)}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),

@@ -5,6 +5,7 @@ import { updateProfile, signOut, changePassword, createCategory, deleteCategory 
 import { bottomNav } from '../components/bottom-nav.js';
 import { categoryIconBox } from '../components/category-chip.js';
 import { formatPLN, parsePLN } from '../format.js';
+import { GEMINI_MODELS, getGeminiModel, setGeminiModel } from '../gemini.js';
 
 const GEMINI_KEY = 'gemini_api_key';
 
@@ -113,6 +114,21 @@ export function renderSettings() {
         toast(v ? 'Klucz zapisany' : 'Klucz usunięty', 'success');
       },
     });
+    // Dropdown modelu AI
+    const currentModel = getGeminiModel();
+    const currentModelDef = GEMINI_MODELS.find(m => m.id === currentModel) || GEMINI_MODELS[0];
+    const modelSelect = h('select', {
+      class: 'select input',
+      onChange: (e) => {
+        setGeminiModel(e.target.value);
+        toast('Model AI ustawiony', 'success');
+        rerender();
+      },
+    }, GEMINI_MODELS.map(m => h('option', {
+      value: m.id,
+      selected: m.id === currentModel ? 'selected' : null,
+    }, m.label)));
+
     cont.appendChild(group('Skanowanie paragonów (AI)', [
       h('div', { class: 'settings-row', style: { flexDirection: 'column', alignItems: 'stretch', padding: '14px 16px' } }, [
         h('div', { class: 'row', style: { gap: '10px', marginBottom: '8px' } }, [
@@ -125,6 +141,11 @@ export function renderSettings() {
           h('a', { href: 'https://aistudio.google.com/apikey', target: '_blank', rel: 'noopener' }, 'aistudio.google.com/apikey'),
           '. Klucz trzymany lokalnie w tej przeglądarce, nigdy nie wysyłany do Supabase.',
         ]),
+      ]),
+      h('div', { class: 'settings-row', style: { flexDirection: 'column', alignItems: 'stretch', padding: '14px 16px' } }, [
+        h('div', { class: 'label', style: { marginBottom: '6px' } }, 'Model AI'),
+        modelSelect,
+        h('div', { class: 'muted', style: { fontSize: '12px', marginTop: '6px' } }, currentModelDef.hint),
       ]),
     ]));
 

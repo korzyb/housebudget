@@ -9,7 +9,7 @@ import { barChart } from '../components/bar-chart.js';
 import { categoryCard } from '../components/category-chip.js';
 import { receiptRow } from '../components/receipt-row.js';
 import { navigate } from '../router.js';
-import { formatPLN, startOfDay, startOfWeek, startOfMonth, toDate } from '../format.js';
+import { formatPLN, startOfWeek, startOfMonth, toDate, toISODate } from '../format.js';
 
 export function renderDashboard() {
   const root = h('div', {});
@@ -21,18 +21,19 @@ export function renderDashboard() {
     root.replaceChildren();
 
     const today = new Date();
-    const sDay = startOfDay(today);
-    const sWeek = startOfWeek(today);
-    const sMonth = startOfMonth(today);
+    // Porównujemy stringi ISO (YYYY-MM-DD) — są leksykograficznie sortowalne, nie ma problemów ze strefami czasowymi
+    const todayISO = toISODate(today);
+    const weekStartISO = toISODate(startOfWeek(today));
+    const monthStartISO = toISODate(startOfMonth(today));
 
     const all = store.receipts;
-    const sumIn = (from) => all
-      .filter(r => toDate(r.purchase_date) >= from)
+    const sumSince = (sinceISO) => all
+      .filter(r => r.purchase_date && r.purchase_date >= sinceISO)
       .reduce((s, r) => s + Number(r.amount || 0), 0);
 
-    const todayTotal = sumIn(sDay);
-    const weekTotal = sumIn(sWeek);
-    const monthTotal = sumIn(sMonth);
+    const todayTotal = sumSince(todayISO);
+    const weekTotal = sumSince(weekStartISO);
+    const monthTotal = sumSince(monthStartISO);
     const limit = Number(store.profile?.monthly_budget || 0);
     const remaining = Math.max(limit - monthTotal, 0);
 
@@ -102,7 +103,7 @@ export function renderDashboard() {
     root.appendChild(h('div', { class: 'view' }, [chartCard]));
 
     // Kategorie — karuzela
-    const monthByCat = groupByCategoryInMonth(all, sMonth);
+    const monthByCat = groupByCategoryInMonth(all, monthStartISO);
     const sortedCats = store.categories
       .map(c => ({ c, total: monthByCat.get(c.id) || 0 }))
       .filter(x => x.total > 0)
@@ -178,10 +179,10 @@ function computeMonthly(receipts, months) {
   return result;
 }
 
-function groupByCategoryInMonth(receipts, startMonth) {
+function groupByCategoryInMonth(receipts, startMonthISO) {
   const map = new Map();
   for (const r of receipts) {
-    if (toDate(r.purchase_date) < startMonth) continue;
+    if (!r.purchase_date || r.purchase_date < startMonthISO) continue;
     const cur = map.get(r.category_id) || 0;
     map.set(r.category_id, cur + Number(r.amount || 0));
   }
