@@ -21,20 +21,21 @@ export function route(pattern, handler, opts = {}) {
   routes.push({ pattern, regex, keys, handler, opts });
 }
 
-let prevUser = null;
+let prevUserId = null;
 
 export function initRouter(el) {
   appEl = el;
   window.addEventListener('hashchange', () => render());
-  window.addEventListener('popstate', () => render());
-  // Re-render tylko gdy auth się zmienia — żeby nie resetować inputów przy każdej zmianie store
+  // Bez popstate — w niektórych przeglądarkach pali dwukrotnie na zmianach hash
+  // Re-render tylko gdy auth się zmienia (po id, nie po referencji — token refresh dostaje nowy obiekt)
   store.on(() => {
-    if (store.user !== prevUser) {
-      prevUser = store.user;
+    const currentUserId = store.user?.id || null;
+    if (currentUserId !== prevUserId) {
+      prevUserId = currentUserId;
       render();
     }
   });
-  prevUser = store.user;
+  prevUserId = store.user?.id || null;
 }
 
 export function navigate(path) {
@@ -51,6 +52,7 @@ export function currentPath() {
 export async function render() {
   if (renderingLock) return;
   renderingLock = true;
+  console.log('[router] render START', { hash: location.hash, stack: new Error().stack });
   try {
     let raw = currentPath();
     if (!raw || raw === '/') {

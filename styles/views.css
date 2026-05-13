@@ -172,6 +172,17 @@
 
 /* ============ RECEIPT DETAIL ============ */
 .detail-view { padding: 0 var(--side); }
+.detail-actions {
+  position: sticky;
+  bottom: calc(var(--nav-h) + var(--bottom-safe) + 4px);
+  background: linear-gradient(180deg, transparent 0%, var(--bg) 24%);
+  padding: 20px 0 8px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 5;
+}
 .detail-photo {
   width: 100%;
   aspect-ratio: 4/3;

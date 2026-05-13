@@ -13,6 +13,8 @@ export function renderReceiptDetail({ id }) {
   let model;
   let existing = null;
 
+  console.log('[receipt-detail] open', { id, draftReceipt: store.draftReceipt });
+
   if (id) {
     existing = store.receipts.find(r => r.id === id);
     if (!existing) {
@@ -25,6 +27,7 @@ export function renderReceiptDetail({ id }) {
     model = clone(store.draftReceipt);
     model.photo_url = model.photo_url || null;
     store.clearDraftReceipt();
+    console.log('[receipt-detail] used draft, model:', model);
   } else {
     model = {
       store_name: '',
@@ -35,6 +38,7 @@ export function renderReceiptDetail({ id }) {
       photo_url: null,
       items: [],
     };
+    console.log('[receipt-detail] no draft, empty model');
   }
 
   const root = h('div', { class: 'view detail-view' });
@@ -206,13 +210,13 @@ export function renderReceiptDetail({ id }) {
         }
       },
     }, 'Zapisz');
-    root.appendChild(saveBtn);
 
+    // Sticky kontener z akcjami — zawsze widoczny nad bottom-nav
+    const actions = h('div', { class: 'detail-actions' }, [saveBtn]);
     if (existing) {
-      root.appendChild(h('button', {
+      actions.appendChild(h('button', {
         class: 'btn btn-danger btn-block',
         type: 'button',
-        style: { marginTop: '8px' },
         onClick: async () => {
           if (!confirm('Usunąć ten rachunek?')) return;
           try {
@@ -225,6 +229,7 @@ export function renderReceiptDetail({ id }) {
         },
       }, 'Usuń rachunek'));
     }
+    root.appendChild(actions);
   }
 
   rerender();

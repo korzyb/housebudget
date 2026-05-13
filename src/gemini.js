@@ -59,6 +59,7 @@ export async function analyzeReceipt(blob) {
     },
   };
 
+  console.log('[gemini] request', { model: MODEL, blobSize: blob.size });
   const res = await fetch(`${ENDPOINT}?key=${encodeURIComponent(key)}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -66,12 +67,26 @@ export async function analyzeReceipt(blob) {
   });
 
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Gemini ${res.status}: ${text.slice(0, 200)}`);
+    const errText = await res.text();
+    console.error('[gemini] HTTP error', res.status, errText);
+    throw new Error(`Gemini ${res.status}: ${errText.slice(0, 200)}`);
   }
 
   const json = await res.json();
-  const text = json?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  console.log('[gemini] response', json);
+
+  const candidate = json?.candidates?.[0];
+  if (!candidate) {
+    throw new Error('Gemini: pusta odpowiedź (brak candidates). Sprawdź konsolę.');
+  }
+  if (candidate.finishReason && candidate.finishReason !== 'STOP') {
+    throw new Error(`Gemini przerwał: ${candidate.finishReason}`);
+  }
+  const text = candidate?.content?.parts?.[0]?.text || '';
+  if (!text) {
+    throw new Error('Gemini zwrócił pusty tekst');
+  }
+  console.log('[gemini] text:', text);
   return parseResult(text);
 }
 

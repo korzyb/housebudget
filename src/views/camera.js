@@ -7,9 +7,51 @@ import { analyzeReceipt, hasGeminiKey } from '../gemini.js';
 import { toISODate } from '../format.js';
 import { getCategory } from '../categories.js';
 
+// Wspólna procedura przetwarzania zdjęcia paragonu — używana z aparatu live i z galerii (add-sheet).
+// Pokazuje overlay w body, uploaduje, woła Gemini, ustawia draft i nawiguje do receipt-detail.
+export async function processReceiptBlob(blob) {
+  if (!blob) return;
+  console.log('[process] start', { size: blob.size, type: blob.type });
+
+  const overlay = createBodyOverlay('Wysyłanie zdjęcia…');
+  try {
+    // 1) upload
+    let photoUrl = null;
+    try {
+      photoUrl = await uploadReceiptPhoto(blob, blobExt(blob));
+      console.log('[process] upload OK', photoUrl);
+    } catch (err) {
+      console.error('[process] Upload failed:', err);
+      toast('Upload zdjęcia: ' + err.message, 'error', 8000);
+    }
+
+    // 2) Gemini
+    let aiResult = null;
+    if (hasGeminiKey()) {
+      overlay.setText('AI czyta paragon…');
+      try {
+        aiResult = await analyzeReceipt(blob);
+        console.log('[process] AI result', aiResult);
+      } catch (err) {
+        console.error('[process] Gemini error:', err);
+        toast('AI: ' + err.message, 'error', 10000);
+      }
+    } else {
+      toast('Wpisz klucz Gemini w ustawieniach, żeby AI czytało paragony.', 'error', 6000);
+    }
+
+    // 3) Draft → przejście do receipt-detail
+    const draft = buildDraft(aiResult, photoUrl);
+    console.log('[process] draft', draft);
+    store.setDraftReceipt(draft);
+    navigate('/receipt/new');
+  } finally {
+    overlay.remove();
+  }
+}
+
 export function renderCamera() {
-  // ?source=process → blob już wybrany w add-sheet, czytamy z store i przetwarzamy
-  // ?source=gallery → fallback gdy aparat zawiódł, otwieramy file input
+  // ?source=gallery → fallback gdy aparat zawiódł (live capture); otwieramy file input
   const params = new URLSearchParams((location.hash.split('?')[1] || ''));
   const source = params.get('source');
 
@@ -28,19 +70,6 @@ export function renderCamera() {
 
   window.addEventListener('hashchange', () => { canceled = true; stopStream(); }, { once: true });
 
-  if (source === 'process') {
-    // Blob już mamy w store (z add-sheet → gallery picker).
-    const blob = store.takePendingPhoto();
-    if (!blob) {
-      // Refresh strony zgubił blob — wróć do dashboard
-      navigate('/dashboard');
-      return root;
-    }
-    // processBlob sam doda overlay z "Wysyłanie zdjęcia…"
-    Promise.resolve().then(() => processBlob(blob));
-    return root;
-  }
-
   if (source === 'gallery' || !navigator.mediaDevices?.getUserMedia) {
     // Fallback: file input (gdy aparat zawiódł — rzadko używany)
     const input = h('input', {
@@ -50,7 +79,7 @@ export function renderCamera() {
       onChange: async (e) => {
         const file = e.target.files?.[0];
         if (!file) { history.back(); return; }
-        await processBlob(file);
+        await processReceiptBlob(file);
       },
     });
     root.appendChild(input);
@@ -58,7 +87,6 @@ export function renderCamera() {
       h('div', { class: 'spinner-lg spinner' }),
       h('div', {}, 'Wybierz zdjęcie z galerii…'),
     ]));
-    // Pojedyncze rAF żeby DOM był zamontowany
     requestAnimationFrame(() => requestAnimationFrame(() => input.click()));
     return root;
   }
@@ -79,7 +107,7 @@ export function renderCamera() {
       canvas.getContext('2d').drawImage(videoEl, 0, 0);
       const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.85));
       stopStream();
-      await processBlob(blob);
+      await processReceiptBlob(blob);
     },
   });
 
@@ -116,49 +144,35 @@ export function renderCamera() {
     }
   })();
 
-  async function processBlob(blob) {
-    if (!blob) { history.back(); return; }
-    const overlay = h('div', { class: 'camera-loading' }, [
-      h('div', { class: 'spinner-lg spinner' }),
-      h('div', { id: 'cam-status' }, 'Wysyłanie zdjęcia…'),
-    ]);
-    root.appendChild(overlay);
-
-    const setStatus = (txt) => { const s = overlay.querySelector('#cam-status'); if (s) s.textContent = txt; };
-
-    try {
-      // 1) upload
-      let photoUrl = null;
-      try {
-        photoUrl = await uploadReceiptPhoto(blob, blobExt(blob));
-      } catch (err) {
-        console.warn('Upload failed:', err);
-        toast('Nie udało się wgrać zdjęcia (zachowam dane lokalnie)', 'error');
-      }
-
-      // 2) Gemini
-      let aiResult = null;
-      if (hasGeminiKey()) {
-        setStatus('AI czyta paragon…');
-        try {
-          aiResult = await analyzeReceipt(blob);
-        } catch (err) {
-          toast('AI: ' + err.message, 'error', 5000);
-        }
-      } else {
-        toast('Wpisz klucz Gemini w ustawieniach, żeby AI czytało paragony.', 'error', 5000);
-      }
-
-      // 3) Draft → przejście do receipt-detail
-      const draft = buildDraft(aiResult, photoUrl);
-      store.setDraftReceipt(draft);
-      navigate('/receipt/new');
-    } finally {
-      overlay.remove();
-    }
-  }
-
   return root;
+}
+
+// Globalny overlay w body — niezależny od mounting/unmounting widoków
+function createBodyOverlay(initialText) {
+  const text = h('div', {
+    style: { fontSize: '15px', color: 'white', fontWeight: '500' },
+  }, initialText);
+  const node = h('div', {
+    style: {
+      position: 'fixed',
+      inset: '0',
+      background: 'rgba(8, 7, 20, 0.85)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '16px',
+      zIndex: '9999',
+    },
+  }, [
+    h('div', { class: 'spinner-lg spinner' }),
+    text,
+  ]);
+  document.body.appendChild(node);
+  return {
+    setText: (t) => { text.textContent = t; },
+    remove: () => node.remove(),
+  };
 }
 
 function blobExt(blob) {

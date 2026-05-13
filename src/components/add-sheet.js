@@ -1,7 +1,7 @@
 import { h } from '../dom.js';
 import { icon } from '../icons.js';
 import { navigate } from '../router.js';
-import { store } from '../store.js';
+import { processReceiptBlob } from '../views/camera.js';
 
 let currentSheet = null;
 
@@ -54,9 +54,9 @@ export function openAddSheet() {
   document.addEventListener('keydown', onKey);
 }
 
-// Otwiera natywny picker zdjęć BEZPOŚREDNIO w user gesture (kliknięcie "Galeria").
-// Bez tego setTimeout-em wewnątrz późniejszego view często powoduje race condition
-// i picker się otwiera dwa razy.
+// Otwiera natywny picker zdjęć w user gesture (klik "Galeria"). Po wybraniu
+// pliku przetwarzamy go bezpośrednio (upload + Gemini), bez routingu — to
+// uniknięcie podwójnego rendera widoków (był bug gdzie tracone były dane z draftu).
 function triggerGalleryPick() {
   const input = document.createElement('input');
   input.type = 'file';
@@ -65,16 +65,20 @@ function triggerGalleryPick() {
   input.style.left = '-9999px';
   input.style.top = '-9999px';
 
+  let handled = false;
+
   input.addEventListener('change', () => {
+    if (handled) return;
+    handled = true;
     const file = input.files?.[0];
     input.remove();
     if (!file) return;
-    store.setPendingPhoto(file);
-    navigate('/camera?source=process');
+    processReceiptBlob(file);
   });
 
-  // Anulowanie pickera nie emituje 'change' — sprzątamy po cancel events (Chrome 113+)
   input.addEventListener('cancel', () => {
+    if (handled) return;
+    handled = true;
     input.remove();
   });
 

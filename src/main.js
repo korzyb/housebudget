@@ -49,12 +49,22 @@ initRouter(appEl);
 })();
 
 // 5) Service worker (PWA)
+// Na localhost nie używamy SW — utrudnia development (cache).
+// Na produkcji (GH Pages) rejestrujemy.
+const isLocal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(err => {
-      console.warn('SW registration failed:', err);
+  if (isLocal) {
+    // Aktywnie wyrejestruj jakikolwiek SW z poprzednich sesji.
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      for (const r of regs) r.unregister();
+    }).catch(() => {});
+  } else {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(err => {
+        console.warn('SW registration failed:', err);
+      });
     });
-  });
+  }
 }
 
 // Zapis theme do localStorage przy zmianie
@@ -68,7 +78,7 @@ function configMissingScreen() {
   return h('div', { class: 'view auth-view' }, [
     h('div', { class: 'brand' }, [
       h('h1', {}, 'Konfiguracja wymagana'),
-      h('p', { class: 'muted' }, 'Plik config.local.js nie jest skonfigurowany.'),
+      h('p', { class: 'muted' }, 'Plik config.js nie jest skonfigurowany.'),
     ]),
     h('div', { class: 'card' }, [
       h('p', { style: { marginBottom: '12px', fontSize: '14px' } }, [
