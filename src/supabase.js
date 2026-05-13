@@ -23,13 +23,16 @@ export async function initSupabase() {
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
       store.set({ user: session.user });
-      await afterSignIn();
+      afterSignIn().catch(err => console.error('[afterSignIn]', err));
     }
 
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    // KRYTYCZNE: callback NIE może być async/awaitujący — SDK trzyma navigator.locks
+    // przez czas trwania callbacka. Jak tu awaitujemy operację która potrzebuje
+    // tego samego locka (np. supabase.from()), mamy deadlock.
+    supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
         store.set({ user: session.user });
-        await afterSignIn();
+        afterSignIn().catch(err => console.error('[afterSignIn]', err));
       } else if (event === 'SIGNED_OUT') {
         store.set({ user: null, profile: null, receipts: [], categories: [] });
       }
@@ -69,65 +72,52 @@ async function afterSignIn() {
 
 export async function loadProfile() {
   if (!supabase || !store.user) return;
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', store.user.id)
-    .maybeSingle();
+  const op = supabase.from('profiles').select('*').eq('id', store.user.id).limit(1);
+  const { data: rows, error } = await withTimeout(op, 15000, 'Pobieranie profilu trwa za długo.');
   if (error) { console.error(error); return; }
-  store.set({ profile: data });
+  store.set({ profile: (rows && rows[0]) || null });
 }
 
 export async function updateProfile(patch) {
   if (!supabase || !store.user) return null;
-  const { data, error } = await supabase
-    .from('profiles')
-    .update(patch)
-    .eq('id', store.user.id)
-    .select()
-    .single();
+  const op = supabase.from('profiles').update(patch).eq('id', store.user.id).select();
+  const { data: rows, error } = await withTimeout(op, 15000, 'Zapis profilu trwa za długo.');
   if (error) throw error;
-  store.set({ profile: data });
+  const data = Array.isArray(rows) ? rows[0] : rows;
+  if (data) store.set({ profile: data });
   return data;
 }
 
 export async function loadCategories() {
   if (!supabase) return;
-  const { data, error } = await supabase
-    .from('categories')
-    .select('*')
-    .order('is_builtin', { ascending: false })
-    .order('name');
+  const op = supabase.from('categories').select('*').order('is_builtin', { ascending: false }).order('name');
+  const { data, error } = await withTimeout(op, 15000, 'Pobieranie kategorii trwa za długo.');
   if (error) { console.error(error); return; }
   store.setCategories(data || []);
 }
 
 export async function createCategory(c) {
   if (!supabase) return null;
-  const { data, error } = await supabase
-    .from('categories')
-    .insert({ ...c, is_builtin: false, created_by: store.user?.id })
-    .select()
-    .single();
+  const op = supabase.from('categories').insert({ ...c, is_builtin: false, created_by: store.user?.id }).select();
+  const { data: rows, error } = await withTimeout(op, 15000, 'Dodawanie kategorii trwa za długo.');
   if (error) throw error;
-  store.upsertCategory(data);
+  const data = Array.isArray(rows) ? rows[0] : rows;
+  if (data) store.upsertCategory(data);
   return data;
 }
 
 export async function deleteCategory(id) {
   if (!supabase) return;
-  const { error } = await supabase.from('categories').delete().eq('id', id);
+  const op = supabase.from('categories').delete().eq('id', id);
+  const { error } = await withTimeout(op, 15000, 'Usuwanie kategorii trwa za długo.');
   if (error) throw error;
   store.removeCategory(id);
 }
 
 export async function loadReceipts() {
   if (!supabase) return;
-  const { data, error } = await supabase
-    .from('receipts')
-    .select('*')
-    .order('purchase_date', { ascending: false })
-    .order('created_at', { ascending: false });
+  const op = supabase.from('receipts').select('*').order('purchase_date', { ascending: false }).order('created_at', { ascending: false });
+  const { data, error } = await withTimeout(op, 15000, 'Pobieranie rachunków trwa za długo.');
   if (error) { console.error(error); return; }
   store.setReceipts(data || []);
 }
@@ -189,37 +179,52 @@ export async function uploadReceiptPhoto(blob, ext = 'jpg') {
 
 export async function signIn(email, password) {
   if (!supabase) throw new Error('Supabase nie jest skonfigurowane');
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const op = supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await withTimeout(op, 15000, 'Logowanie trwa za długo. Spróbuj ponownie.');
   if (error) throw error;
   return data;
 }
 
 export async function signUp(email, password, name) {
   if (!supabase) throw new Error('Supabase nie jest skonfigurowane');
-  const { data, error } = await supabase.auth.signUp({
+  const op = supabase.auth.signUp({
     email,
     password,
     options: { data: { name } },
   });
+  const { data, error } = await withTimeout(op, 15000, 'Rejestracja trwa za długo. Spróbuj ponownie.');
   if (error) throw error;
   return data;
 }
 
-export async function signOut() {
-  if (!supabase) return;
-  await supabase.auth.signOut();
+export function signOut() {
+  // Natychmiastowy logout — czyścimy store i sb-* z localStorage synchronicznie.
+  // Bez await na SDK (potrafi wisieć 3+ sekund z navigator.locks). Router widzi
+  // user=null i redirektuje na /login od razu.
+  store.set({ user: null, profile: null, receipts: [], categories: [] });
+  try {
+    for (const k of Object.keys(localStorage)) {
+      if (k.startsWith('sb-')) localStorage.removeItem(k);
+    }
+  } catch {}
+  // SDK signOut w tle — bez wpływu na UX
+  if (supabase) {
+    supabase.auth.signOut({ scope: 'local' }).catch(err => console.warn('[signOut bg]', err));
+  }
 }
 
 export async function resetPassword(email) {
   if (!supabase) throw new Error('Supabase nie jest skonfigurowane');
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+  const op = supabase.auth.resetPasswordForEmail(email, {
     redirectTo: location.origin + location.pathname,
   });
+  const { error } = await withTimeout(op, 15000, 'Wysyłanie maila trwa za długo.');
   if (error) throw error;
 }
 
 export async function changePassword(newPassword) {
   if (!supabase) throw new Error('Supabase nie jest skonfigurowane');
-  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  const op = supabase.auth.updateUser({ password: newPassword });
+  const { error } = await withTimeout(op, 15000, 'Zmiana hasła trwa za długo.');
   if (error) throw error;
 }
