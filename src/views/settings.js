@@ -22,29 +22,6 @@ export function renderSettings() {
     const cont = h('div', { class: 'view stack', style: { '--gap': '20px' } });
     root.appendChild(cont);
 
-    // Wygląd
-    cont.appendChild(group('Wygląd', [
-      h('div', { class: 'settings-row' }, [
-        h('div', { class: 'row' }, [
-          icon(store.theme === 'dark' ? 'moon' : 'sun'),
-          h('div', { class: 'label' }, 'Motyw'),
-        ]),
-        h('button', {
-          class: 'toggle' + (store.theme === 'dark' ? ' on' : ''),
-          type: 'button',
-          'aria-label': 'Przełącz motyw',
-          onClick: async () => {
-            const next = store.theme === 'dark' ? 'light' : 'dark';
-            store.setTheme(next);
-            try {
-              if (store.user) await updateProfile({ theme: next });
-            } catch (err) { toast(err.message, 'error'); }
-            rerender();
-          },
-        }),
-      ]),
-    ]));
-
     // Budżet
     const budgetInput = h('input', {
       class: 'input',

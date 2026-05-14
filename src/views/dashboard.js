@@ -1,7 +1,7 @@
-import { h } from '../dom.js';
+import { h, toast } from '../dom.js';
 import { icon } from '../icons.js';
 import { store } from '../store.js';
-import { loadReceipts } from '../supabase.js';
+import { loadReceipts, updateProfile } from '../supabase.js';
 import { bottomNav } from '../components/bottom-nav.js';
 import { statCard } from '../components/stat-card.js';
 import { budgetRing } from '../components/budget-ring.js';
@@ -37,18 +37,28 @@ export function renderDashboard() {
     const limit = Number(store.profile?.monthly_budget || 0);
     const remaining = Math.max(limit - monthTotal, 0);
 
-    // Header
+    // Header — powitanie + przełącznik motywu (zaznaczony = ciemny, księżyc; odznaczony = jasny, słońce)
+    const isDark = store.theme === 'dark';
+    const themeIcon = icon(isDark ? 'moon' : 'sun');
+    const themeBtn = h('button', {
+      class: 'toggle' + (isDark ? ' on' : ''),
+      type: 'button',
+      'aria-label': 'Przełącz motyw',
+      onClick: () => {
+        const next = store.theme === 'dark' ? 'light' : 'dark';
+        store.setTheme(next);
+        if (store.user) {
+          updateProfile({ theme: next }).catch(err => toast(err.message, 'error'));
+        }
+        rerender();
+      },
+    });
     const greeting = h('div', { class: 'dash-hello' }, [
       h('div', { class: 'greeting' }, [
         h('div', { class: 'small' }, greetingForHour(today.getHours())),
         h('div', { class: 'name' }, store.profile?.name || 'Użytkowniku'),
       ]),
-      h('button', {
-        class: 'btn btn-icon',
-        type: 'button',
-        'aria-label': 'Ustawienia',
-        onClick: () => navigate('/settings'),
-      }, [icon('settings')]),
+      h('div', { class: 'row', style: { gap: '10px' } }, [themeIcon, themeBtn]),
     ]);
     root.appendChild(greeting);
 
