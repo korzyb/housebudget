@@ -111,8 +111,10 @@
   --primary-hover: #6366f1;
   --primary-ink: #ffffff;
 
-  --accent: #ef4444;
-  --accent-hover: #f87171;
+  /* Accent: koral (zgodnie z design guide). Wyraźnie różowy żeby nie mylił się
+     z danger-czerwienią używaną na ostrzeżenia (>90% budżetu, "zbliżamy się do limitu"). */
+  --accent: #fb7185;
+  --accent-hover: #f43f5e;
 
   --text: #1a1f3a;
   --text-muted: #6b7090;
