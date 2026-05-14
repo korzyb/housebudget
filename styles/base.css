@@ -5,7 +5,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100%;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
@@ -19,9 +19,6 @@ html, body {
 }
 
 body {
-  /* Centrowanie kolumny mobilnej na desktopie */
-  display: flex;
-  justify-content: center;
   background: var(--bg);
 }
 
@@ -29,10 +26,13 @@ body {
   width: 100%;
   max-width: var(--max-w);
   min-height: 100dvh;
+  margin: 0 auto; /* centrowanie kolumny mobilnej na desktopie */
   background: var(--bg);
   position: relative;
   padding-top: var(--top-safe);
-  padding-bottom: calc(var(--nav-h) + var(--bottom-safe) + var(--sp-4));
+  /* Bufor pod bottom-nav. Nav ~80px (Android) - ~98px (iPhone PWA), +button
+     protrudes 12px nad nav top. ~32px gap nad +buttonem dla komfortu. */
+  padding-bottom: calc(80px + var(--bottom-safe) + 12px);
 }
 
 /* Gdy widok publiczny (login/register) — nie ma nav, więc resetujemy padding bottom */

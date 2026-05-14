@@ -174,7 +174,8 @@
 .detail-view { padding: 0 var(--side); }
 .detail-actions {
   position: sticky;
-  bottom: calc(var(--nav-h) + var(--bottom-safe) + 4px);
+  /* nad samym +buttonem (który protrudes 12px nad nav) — daje 8-12px gap, save zawsze widoczny */
+  bottom: calc(80px + var(--bottom-safe) + 16px);
   background: linear-gradient(180deg, transparent 0%, var(--bg) 24%);
   padding: 20px 0 8px;
   margin-top: 12px;

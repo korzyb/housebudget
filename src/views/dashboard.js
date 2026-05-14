@@ -120,13 +120,15 @@ export function renderDashboard() {
       .sort((a, b) => b.total - a.total);
 
     if (sortedCats.length) {
-      root.appendChild(h('div', { class: 'view', style: { marginTop: '20px' } }, [
-        h('div', { class: 't-section', style: { padding: '0 0 8px' } }, 'Kategorie w tym miesiącu'),
-      ]));
       const carousel = h('div', { class: 'h-scroll' },
         sortedCats.map(({ c, total }) => categoryCard(c, total, formatPLN))
       );
-      root.appendChild(carousel);
+      // Karuzela MUSI być wewnątrz .view — negatywny margin -side niweluje wtedy padding .view
+      // i wyrównuje pierwszy element do tej samej krawędzi co pozostała zawartość ekranu.
+      root.appendChild(h('div', { class: 'view', style: { marginTop: '20px' } }, [
+        h('div', { class: 't-section', style: { padding: '0 0 8px' } }, 'Kategorie w tym miesiącu'),
+        carousel,
+      ]));
     }
 
     // Ostatnie rachunki
