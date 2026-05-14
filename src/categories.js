@@ -5,15 +5,26 @@
 import { store } from './store.js';
 
 export const BUILTIN_CATEGORIES = [
-  { slug: 'food',       name: 'Jedzenie',    icon: 'shopping-cart', color: '#34d399', bg: 'var(--cat-food-bg)' },
-  { slug: 'transport',  name: 'Transport',   icon: 'car',           color: '#6366f1', bg: 'var(--cat-transport-bg)' },
-  { slug: 'fun',        name: 'Rozrywka',    icon: 'gamepad-2',     color: '#8b5cf6', bg: 'var(--cat-fun-bg)' },
-  { slug: 'home',       name: 'Dom',         icon: 'home',          color: '#f59e0b', bg: 'var(--cat-home-bg)' },
-  { slug: 'health',     name: 'Zdrowie',     icon: 'heart-pulse',   color: '#f87171', bg: 'var(--cat-health-bg)' },
-  { slug: 'kids',       name: 'Dzieci',      icon: 'baby',          color: '#f472b6', bg: 'var(--cat-kids-bg)' },
-  { slug: 'travel',     name: 'Wyjazdy',     icon: 'plane',         color: '#22d3ee', bg: 'var(--cat-travel-bg)' },
-  { slug: 'subs',       name: 'Subskrypcje', icon: 'smartphone',    color: '#a78bfa', bg: 'var(--cat-subs-bg)' },
-  { slug: 'other',      name: 'Inne',        icon: 'package',       color: '#94a3b8', bg: 'var(--cat-other-bg)' },
+  { slug: 'food',       name: 'Jedzenie',    icon: 'shopping-cart', color: '#34d399', bg: 'var(--cat-food-bg)',
+    hint: 'zakupy spożywcze (Biedronka, Lidl, Carrefour), restauracje, fast food, kawa, słodycze, alkohol' },
+  { slug: 'transport',  name: 'Transport',   icon: 'car',           color: '#6366f1', bg: 'var(--cat-transport-bg)',
+    hint: 'paliwo (Orlen, Shell, BP), MPK, ZTM, taxi, Uber, Bolt, parkingi, opłaty drogowe, naprawy/serwis auta' },
+  { slug: 'fun',        name: 'Rozrywka',    icon: 'gamepad-2',     color: '#8b5cf6', bg: 'var(--cat-fun-bg)',
+    hint: 'kino, koncerty, gry, książki, hobby, sport rekreacyjny, wyjścia ze znajomymi' },
+  { slug: 'home',       name: 'Dom',         icon: 'home',          color: '#f59e0b', bg: 'var(--cat-home-bg)',
+    hint: 'czynsz, prąd, gaz, woda, internet, meble, AGD, RTV, IKEA, Castorama, remonty, ogród' },
+  { slug: 'health',     name: 'Zdrowie',     icon: 'heart-pulse',   color: '#f87171', bg: 'var(--cat-health-bg)',
+    hint: 'apteka, leki, wizyty lekarskie, dentysta, fizjoterapia, okulary, kosmetyki/drogeria (Rossmann, Hebe)' },
+  { slug: 'kids',       name: 'Dzieci',      icon: 'baby',          color: '#f472b6', bg: 'var(--cat-kids-bg)',
+    hint: 'zabawki, ubrania dla dzieci, pieluchy, szkoła, przedszkole, książki dziecięce, zajęcia dodatkowe' },
+  { slug: 'travel',     name: 'Wyjazdy',     icon: 'plane',         color: '#22d3ee', bg: 'var(--cat-travel-bg)',
+    hint: 'bilety lotnicze/kolejowe, hotele, Airbnb, Booking, wakacje, urlop, wycieczki' },
+  { slug: 'subs',       name: 'Subskrypcje', icon: 'smartphone',    color: '#a78bfa', bg: 'var(--cat-subs-bg)',
+    hint: 'Netflix, Spotify, YouTube Premium, abonament telefoniczny, chmury (iCloud, Google), SaaS' },
+  { slug: 'loans',      name: 'Spłaty rat',  icon: 'credit-card',   color: '#475569', bg: 'var(--cat-loans-bg)',
+    hint: 'rata kredytu, leasing samochodu/sprzętu, pożyczki, raty 0%, zakupy na raty (Allegro Pay, PayU Później)' },
+  { slug: 'other',      name: 'Inne',        icon: 'package',       color: '#94a3b8', bg: 'var(--cat-other-bg)',
+    hint: 'cokolwiek co nie pasuje do pozostałych kategorii — np. ubrania dla dorosłych, prezenty, darowizny' },
 ];
 
 export function bgForColor(hex) {
@@ -47,6 +58,7 @@ export function categoryBg(c) {
       kids: 'var(--cat-kids-bg)',
       travel: 'var(--cat-travel-bg)',
       subs: 'var(--cat-subs-bg)',
+      loans: 'var(--cat-loans-bg)',
       other: 'var(--cat-other-bg)',
     };
     if (map[c.slug]) return map[c.slug];

@@ -123,6 +123,7 @@ insert into public.categories (slug, name, icon, color, is_builtin) values
   ('kids',       'Dzieci',      'baby',          '#f472b6', true),
   ('travel',     'Wyjazdy',     'plane',         '#22d3ee', true),
   ('subs',       'Subskrypcje', 'smartphone',    '#a78bfa', true),
+  ('loans',      'Spłaty rat',  'credit-card',   '#475569', true),
   ('other',      'Inne',        'package',       '#94a3b8', true)
 on conflict (slug) do update set
   name = excluded.name,

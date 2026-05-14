@@ -35,26 +35,33 @@ export function getGeminiKey() {
   return localStorage.getItem(GEMINI_KEY) || '';
 }
 
+const CATEGORY_HINTS = BUILTIN_CATEGORIES
+  .map(c => `- "${c.slug}" (${c.name}): ${c.hint}`)
+  .join('\n');
+
 const PROMPT_PL = `
-Jesteś asystentem do analizy paragonów sklepowych. Otrzymasz zdjęcie paragonu z polskiego sklepu.
+Jesteś asystentem do analizy paragonów sklepowych. Otrzymasz zdjęcie/PDF paragonu z polskiego sklepu lub usługi.
 
 Wyodrębnij dane do JSON o następującej strukturze (wszystkie pola opcjonalne — zostaw null/pustą tablicę jeśli nie pewne):
 
 {
-  "store_name": string lub null,         // nazwa sklepu (np. "Biedronka", "Lidl")
+  "store_name": string lub null,         // nazwa sklepu lub usługodawcy (np. "Biedronka", "PKO BP", "Volkswagen Leasing")
   "purchase_date": string lub null,      // YYYY-MM-DD
-  "items": [                              // pozycje z paragonu
+  "items": [                              // pozycje z paragonu (dla rachunków typu leasing/rata — pusta tablica)
     { "name": string, "price": number }
   ],
   "total_amount": number lub null,       // łączna kwota w złotych (liczba, kropka jako separator)
-  "suggested_category_slug": string lub null  // jedno z: ${BUILTIN_CATEGORIES.map(c => `"${c.slug}"`).join(', ')}
+  "suggested_category_slug": string lub null  // dokładnie jedno ze slugów poniżej
 }
+
+Dostępne kategorie (slug + przykłady co tam pakować):
+${CATEGORY_HINTS}
 
 Reguły:
 - Kwoty zawsze w PLN, format liczby (np. 12.50, nie "12,50 zł").
 - Nazwy pozycji skracaj sensownie (max 40 znaków).
 - Jeśli nie jesteś pewny pola, użyj null.
-- Sugestia kategorii: dopasuj do typu sklepu (np. Biedronka/Lidl → food, Orlen/MPK → transport, IKEA → home, apteka → health).
+- Kategoria: dopasuj semantycznie, nie tylko po nazwie sklepu. Np. paragon za leasing samochodu → "loans", ratę kredytu mieszkaniowego → "loans", a nie "home".
 - Zwróć WYŁĄCZNIE poprawny JSON bez żadnego dodatkowego tekstu, bez backticków, bez \`\`\`json.
 `.trim();
 

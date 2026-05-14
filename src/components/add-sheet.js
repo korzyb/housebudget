@@ -37,6 +37,7 @@ export function openAddSheet() {
     h('div', { class: 't-section', style: { marginBottom: '8px', padding: '0 8px' } }, 'Dodaj wydatek'),
     option('camera', 'Aparat', 'Zrób zdjęcie paragonu — AI go ogarnie', () => navigate('/camera')),
     option('image', 'Galeria', 'Wybierz zdjęcie paragonu z telefonu', () => triggerGalleryPick()),
+    option('file-text', 'Plik', 'Wybierz PDF z paragonem (np. e-paragon)', () => triggerFilePick()),
     option('edit', 'Wprowadź ręcznie', 'Wpisz kwotę i kategorię', () => navigate('/receipt/new')),
     h('button', {
       class: 'btn btn-ghost btn-block',
@@ -58,9 +59,19 @@ export function openAddSheet() {
 // pliku przetwarzamy go bezpośrednio (upload + Gemini), bez routingu — to
 // uniknięcie podwójnego rendera widoków (był bug gdzie tracone były dane z draftu).
 function triggerGalleryPick() {
+  openNativePicker('image/*');
+}
+
+// PDF-only — bez image/* w accept native OS picker pomija kafelek aparatu
+// i otwiera prosto przeglądarkę plików / Downloads.
+function triggerFilePick() {
+  openNativePicker('application/pdf');
+}
+
+function openNativePicker(acceptStr) {
   const input = document.createElement('input');
   input.type = 'file';
-  input.accept = 'image/*,application/pdf';
+  input.accept = acceptStr;
   input.style.position = 'fixed';
   input.style.left = '-9999px';
   input.style.top = '-9999px';
