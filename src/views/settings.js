@@ -6,6 +6,7 @@ import { bottomNav } from '../components/bottom-nav.js';
 import { categoryIconBox } from '../components/category-chip.js';
 import { formatPLN, parsePLN } from '../format.js';
 import { GEMINI_MODELS, getGeminiModel, setGeminiModel } from '../gemini.js';
+import { canInstall, isInstalled, promptInstall, isIOS, onInstallChange } from '../install.js';
 
 const GEMINI_KEY = 'gemini_api_key';
 
@@ -157,6 +158,9 @@ export function renderSettings() {
       ]),
     ]));
 
+    // Instalacja PWA — pokazujemy w zależności od stanu
+    cont.appendChild(installSection());
+
     // Build info
     cont.appendChild(h('div', {
       class: 'center muted',
@@ -250,8 +254,60 @@ export function renderSettings() {
     });
   }
 
+  function installSection() {
+    if (isInstalled()) {
+      return group('Aplikacja', [
+        h('div', { class: 'settings-row' }, [
+          h('div', { class: 'row' }, [icon('check'), h('div', { class: 'label' }, 'Zainstalowana')]),
+          h('div', { class: 'value' }, 'gotowe'),
+        ]),
+      ]);
+    }
+    if (canInstall()) {
+      return group('Aplikacja', [
+        h('button', {
+          class: 'settings-row button-row',
+          type: 'button',
+          onClick: async () => {
+            const ok = await promptInstall();
+            if (ok) toast('Apka zainstalowana', 'success');
+          },
+        }, [
+          h('div', { class: 'row' }, [icon('plus'), h('div', { class: 'label' }, 'Zainstaluj na telefonie')]),
+          icon('chevron-right'),
+        ]),
+        h('div', { class: 'muted', style: { fontSize: '12px', padding: '4px 16px 8px' } },
+          'Apka pojawi się jako osobna ikona na ekranie głównym — bez paska przeglądarki.'),
+      ]);
+    }
+    if (isIOS()) {
+      return group('Aplikacja', [
+        h('div', { class: 'settings-row', style: { flexDirection: 'column', alignItems: 'stretch', padding: '14px 16px' } }, [
+          h('div', { class: 'label', style: { fontWeight: '600', marginBottom: '8px' } },
+            'Dodaj do ekranu głównego'),
+          h('div', { class: 'muted', style: { fontSize: '13px', lineHeight: '1.5' } }, [
+            'W Safari (nie Chrome!):', h('br'),
+            '1. Tapnij ikonę udostępniania (kwadrat ze strzałką ↑) na dole', h('br'),
+            '2. Przewiń niżej i wybierz "Do ekranu początkowego"', h('br'),
+            '3. Tapnij "Dodaj" — apka pojawi się jako osobna ikona.',
+          ]),
+        ]),
+      ]);
+    }
+    // Inny browser / desktop bez install prompt: pokaż jak ręcznie zainstalować
+    return group('Aplikacja', [
+      h('div', { class: 'settings-row', style: { flexDirection: 'column', alignItems: 'stretch', padding: '14px 16px' } }, [
+        h('div', { class: 'label', style: { fontWeight: '600', marginBottom: '8px' } },
+          'Zainstaluj na telefonie'),
+        h('div', { class: 'muted', style: { fontSize: '13px', lineHeight: '1.5' } },
+          'W Chrome lub innej przeglądarce mobilnej: menu (trzy kropki) → "Dodaj do ekranu głównego" lub "Zainstaluj aplikację".'),
+      ]),
+    ]);
+  }
+
   const unsub = store.on(() => rerender());
-  window.addEventListener('hashchange', () => unsub(), { once: true });
+  const unsubInstall = onInstallChange(() => rerender());
+  window.addEventListener('hashchange', () => { unsub(); unsubInstall(); }, { once: true });
   rerender();
 
   return h('div', {}, [root, bottomNav()]);

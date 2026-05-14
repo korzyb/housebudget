@@ -14,6 +14,9 @@ import { renderReceiptDetail } from './views/receipt-detail.js';
 import { renderCalendar } from './views/calendar.js';
 import { renderSettings } from './views/settings.js';
 import { renderCamera } from './views/camera.js';
+// Side-effect import — listenery beforeinstallprompt/appinstalled muszą być
+// zarejestrowane od startu, zanim user otworzy ustawienia.
+import './install.js';
 
 const appEl = document.getElementById('app');
 
