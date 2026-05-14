@@ -12,6 +12,7 @@ export function renderReceiptDetail({ id }) {
   // Stan formularza
   let model;
   let existing = null;
+  let isManualEntry = false;
 
   if (id) {
     existing = store.receipts.find(r => r.id === id);
@@ -26,6 +27,7 @@ export function renderReceiptDetail({ id }) {
     model.photo_url = model.photo_url || null;
     store.clearDraftReceipt();
   } else {
+    isManualEntry = true;
     model = {
       store_name: '',
       purchase_date: toISODate(new Date()),
@@ -39,6 +41,7 @@ export function renderReceiptDetail({ id }) {
 
   const root = h('div', { class: 'view detail-view' });
   let saving = false;
+  let storeNameInput = null;
 
   function rerender() {
     root.replaceChildren();
@@ -63,15 +66,16 @@ export function renderReceiptDetail({ id }) {
     }
 
     // Sklep
+    storeNameInput = h('input', {
+      class: 'input',
+      type: 'text',
+      value: model.store_name || '',
+      placeholder: 'np. Biedronka',
+      onInput: (e) => { model.store_name = e.target.value; },
+    });
     root.appendChild(h('div', { class: 'field', style: { marginBottom: '12px' } }, [
       h('label', {}, 'Nazwa sklepu'),
-      h('input', {
-        class: 'input',
-        type: 'text',
-        value: model.store_name || '',
-        placeholder: 'np. Biedronka',
-        onInput: (e) => { model.store_name = e.target.value; },
-      }),
+      storeNameInput,
     ]));
 
     // Data
@@ -180,20 +184,30 @@ export function renderReceiptDetail({ id }) {
           : Number(model.amount) || 0;
         if (!total || total <= 0) { toast('Wpisz kwotę większą od zera', 'error'); return; }
 
+        const payload = {
+          id: existing?.id,
+          store_name: model.store_name?.trim() || null,
+          purchase_date: model.purchase_date,
+          category_id: model.category_id,
+          amount: total,
+          description: model.description?.trim() || null,
+          photo_url: model.photo_url || null,
+          items: model.items.filter(it => it.name || it.price),
+        };
+
+        // Sprawdzenie duplikatu (sklep + data + kwota) — pomijamy gdy edytujemy ten sam rachunek
+        const dup = findDuplicate(payload, store.receipts);
+        if (dup) {
+          const dupLabel = `${dup.store_name || '(bez nazwy)'} — ${dup.purchase_date} — ${formatPLN(dup.amount)}`;
+          if (!confirm(`Istnieje już rachunek o tych samych danych:\n\n${dupLabel}\n\nZapisać mimo to?`)) {
+            return;
+          }
+        }
+
         saving = true;
         saveBtn.disabled = true;
         saveBtn.textContent = 'Zapisuję…';
         try {
-          const payload = {
-            id: existing?.id,
-            store_name: model.store_name?.trim() || null,
-            purchase_date: model.purchase_date,
-            category_id: model.category_id,
-            amount: total,
-            description: model.description?.trim() || null,
-            photo_url: model.photo_url || null,
-            items: model.items.filter(it => it.name || it.price),
-          };
           await saveReceipt(payload);
           toast(existing ? 'Zaktualizowano' : 'Zapisano', 'success');
           navigate('/receipts');
@@ -229,6 +243,11 @@ export function renderReceiptDetail({ id }) {
   }
 
   rerender();
+
+  // Auto-focus pole "Nazwa sklepu" przy ręcznym wpisywaniu — po mount w DOM
+  if (isManualEntry && storeNameInput) {
+    requestAnimationFrame(() => storeNameInput.focus());
+  }
 
   return h('div', {}, [root, bottomNav()]);
 }
@@ -267,3 +286,17 @@ function defaultCategoryId() {
 }
 
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+// Szuka rachunku o tej samej kombinacji (store_name, purchase_date, amount).
+// Pomija rachunek o tym samym id (case'em edycji — wtedy nie traktuj samego siebie jako duplikat).
+function findDuplicate(payload, allReceipts) {
+  const name = (payload.store_name || '').trim().toLowerCase();
+  const date = payload.purchase_date;
+  const amt = Math.round(Number(payload.amount) * 100); // grosze — bez floating point edge cases
+  return allReceipts.find(r => {
+    if (payload.id && r.id === payload.id) return false;
+    const rName = (r.store_name || '').trim().toLowerCase();
+    const rAmt = Math.round(Number(r.amount) * 100);
+    return rName === name && r.purchase_date === date && rAmt === amt;
+  });
+}
