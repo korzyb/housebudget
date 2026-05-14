@@ -112,9 +112,27 @@ Hash router (`#/dashboard`, `#/receipt/:id` itp.). Wybrany świadomie zamiast Hi
 ## Gotchas / nauczki z dotychczasowej pracy
 
 ### 1. Supabase JS SDK i `.single()` potrafią wisieć
-Przy `.insert().select().single()` SDK czasem nie zwalniał promise mimo że request wracał 200. Rachunek ZAPISYWAŁ się w bazie, ale klient wisiał do timeoutu. **Workaround**: bez `.single()`, użyj `.select()` i unwrap `rows[0]` ręcznie. Patrz `saveReceipt()` w `supabase.js`.
+Przy `.insert().select().single()` SDK czasem nie zwalniał promise mimo że request wracał 200. Rachunek ZAPISYWAŁ się w bazie, ale klient wisiał do timeoutu. **Workaround**: bez `.single()`, użyj `.select()` i unwrap `rows[0]` ręcznie. Patrz `saveReceipt()` w `supabase.js`. Cała baza operacji w `supabase.js` została z `.single()`/`.maybeSingle()` przepisana — nie używaj tych metod w nowym kodzie.
 
 Podobny pattern może dotyczyć innych operacji. Jak coś wisi mimo 200 w Network — zrezygnuj z `.single()`.
+
+### 1a. DEADLOCK na `navigator.locks` w `onAuthStateChange` (CRITICAL)
+**Najgrubszy bug który złapaliśmy.** Objaw: "pierwsza operacja działa, kolejne wiszą do timeoutu". Stack trace pokazuje `locks.ts` + `_recoverAndRefresh` + `_notifyAllSubscribers`.
+
+Supabase auth SDK (`@supabase/auth-js` → `GoTrueClient`) używa `navigator.locks` na klucz typu `sb-<projectref>-auth-token`. Lock jest trzymany przez cały czas trwania callbacka `onAuthStateChange`. Jeśli w callbacku **awaitujemy** cokolwiek co używa tego samego locka (a `supabase.from(...)` go używa do walidacji JWT), mamy klasyczny deadlock — callback czeka na zapytanie, zapytanie czeka na zwolnienie locka, lock zwolni się dopiero gdy callback wyjdzie.
+
+**Reguła**: callback `onAuthStateChange` **musi być synchroniczny** (nie `async`) i NIE wolno w nim awaitować operacji na `supabase.from(...)` ani `supabase.storage` ani `supabase.auth`. Fire-and-forget z `.catch()`:
+
+```js
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN') {
+    store.set({ user: session.user });
+    afterSignIn().catch(console.error);  // BEZ await
+  }
+});
+```
+
+Ten sam pattern dotyczy `signOut()` — bezpośredni `await supabase.auth.signOut()` w handlerze kliku też wisiał (Violation: click took 3000ms+). Rozwiązanie: ręcznie wyczyść `store` + `sb-*` z localStorage synchronicznie, SDK signOut puścić w tle.
 
 ### 2. Service worker NIE rejestruje się na localhost
 `main.js` sprawdza `location.hostname` i pomija SW na `localhost`/`127.0.0.1`. Plus aktywnie wyrejestrowuje pozostałości z poprzednich sesji. Powód: SW agresywnie cache'ował stare moduły w developmentie i każda zmiana wymagała czyszczenia storage.
