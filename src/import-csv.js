@@ -32,22 +32,24 @@ const MBANK_MAP = {
 const KEYWORD_RULES = [
   // Restauracje / jedzenie poza domem
   { re: /mcdonald|kfc|burger\s*king|pizza|restaur|bistro|kawiarni|coffee\b|urban\s*grill|curry\s*house|garmarz|sushi|kebab|lody\s*autor|kuncer|sweet\s*factory|costa\s*coffee/i, slug: 'dining' },
-  // Zdrowie i uroda — uwaga: osteop (nie osteopat!) żeby złapać OSTEOPRAKTYKA
-  { re: /fryzjer|kosmetyczk|salon\s*pi|gabinet|drogeria|rossmann|super.?pharm|spa\b|masa[zż]|osteop|fizjoter|apteka|szpital|klinika|medic|dental|dent|okulary|okulista|laryngol|ortoped/i, slug: 'health' },
+  // Zdrowie i uroda — osteop (nie osteopat!) żeby złapać OSTEOPRAKTYKA; cefarm = apteka hurtowa
+  { re: /fryzjer|kosmetyczk|salon\s*pi|gabinet|drogeria|rossmann|super.?pharm|cefarm|spa\b|masa[zż]|osteop|fizjoter|apteka|szpital|klinika|medic|dental|dent|okulary|okulista|laryngol|ortoped/i, slug: 'health' },
   // Subskrypcje
   { re: /google\s*(one|play|storage)|netflix|spotify|apple\s*(one|tv|music)|youtube\s*premium|hbo|disney|amazon\s*prime|tidal|deezer|orange|t-mobile|\bplay\b|plus\s*gsm|cyfrow|nc\+|iptv|multiroom/i, slug: 'subs' },
   // Dzieci — warianty z i bez polskich znaków (encoding)
-  { re: /przedszkole|[zż][lł]obek|opiekunka|niania|alimenty|czesne\b/i,                 slug: 'kids' },
-  // Spłaty rat — warianty z i bez polskich znaków
+  { re: /przedszkole|[zż][lł]obek|opiekunka|niania|alimenty|czesne\b/i,                  slug: 'kids' },
+  // Spłaty rat
   { re: /credit\s*agricole|pko\s*bp|mbank|bnp\s*paribas|santander|ing\s*bank|pekao|leasing|rata\b|kredyt\b|po[zż]yczk/i, slug: 'loans' },
-  // Transport
-  { re: /\borlen\b|\bbp[\s-]|shell|lotos|\bcircle\s*k\b|stacja\s*paliw|mpsa|jakdojade/i, slug: 'transport' },
+  // Transport — myjnia/car wash/pink wash
+  { re: /\borlen\b|\bbp[\s-]|shell|lotos|\bcircle\s*k\b|stacja\s*paliw|mpsa|jakdojade|myjnia|car.?wash|pink.?wash/i, slug: 'transport' },
   // Podróże
-  { re: /pkp|intercity|flixbus|\blot\b|wizzair|ryanair|bilet.*kol|bilet.*lot/i,          slug: 'travel' },
-  // Sklepy spożywcze i lokalne — babci/babci eli = lokalny sklep/delikatesy
-  { re: /biedronka|lidl|auchan|carrefour|kaufland|netto|stokrotka|dino|spar|makro|frisco|delikatesy|sklep\s*spo[zż]|warzywa|babci|kerner|darko.pol/i, slug: 'food' },
+  { re: /pkp|intercity|flixbus|\blot\b|wizzair|ryanair|bilet.*kol|bilet.*lot/i,           slug: 'travel' },
+  // Dom — ogród, sklep ogrodniczy, markety budowlane
+  { re: /ogrodniczy|ogrodni|sklep.*ogrod|castorama|leroy|bricomarche|\bobi\b|ikea|jula|bricomarch/i, slug: 'home' },
+  // Sklepy spożywcze i lokalne — wielobr = wielobranżowy (zazwyczaj lokalny sklep)
+  { re: /biedronka|lidl|auchan|carrefour|kaufland|netto|stokrotka|dino|spar|makro|frisco|delikatesy|sklep\s*spo[zż]|warzywa|babci|m[aą]ka|wielobr|kerner|darko.pol/i, slug: 'food' },
   // Inne / opłaty bankowe
-  { re: /pakiet\s*bezpieczna|ubezpieczeni/i,                                              slug: 'other' },
+  { re: /pakiet\s*bezpieczna|ubezpieczeni/i,                                               slug: 'other' },
 ];
 
 export async function importCSV(file) {
