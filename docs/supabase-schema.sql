@@ -113,23 +113,33 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
--- ============ SEED 9 WBUDOWANYCH KATEGORII ============
+-- ============ SEED 12 WBUDOWANYCH KATEGORII ============
 insert into public.categories (slug, name, icon, color, is_builtin) values
-  ('food',       'Jedzenie',    'shopping-cart', '#34d399', true),
-  ('transport',  'Transport',   'car',           '#6366f1', true),
-  ('fun',        'Rozrywka',    'gamepad-2',     '#8b5cf6', true),
-  ('home',       'Dom',         'home',          '#f59e0b', true),
-  ('health',     'Zdrowie',     'heart-pulse',   '#f87171', true),
-  ('kids',       'Dzieci',      'baby',          '#f472b6', true),
-  ('travel',     'Wyjazdy',     'plane',         '#22d3ee', true),
-  ('subs',       'Subskrypcje', 'smartphone',    '#a78bfa', true),
-  ('loans',      'Spłaty rat',  'credit-card',   '#475569', true),
-  ('other',      'Inne',        'package',       '#94a3b8', true)
+  ('food',       'Jedzenie',              'shopping-cart', '#34d399', true),
+  ('dining',     'Jedzenie poza domem',   'utensils',      '#fb923c', true),
+  ('transport',  'Transport',             'car',           '#6366f1', true),
+  ('fun',        'Rozrywka',              'gamepad-2',     '#8b5cf6', true),
+  ('home',       'Dom',                   'home',          '#f59e0b', true),
+  ('health',     'Zdrowie',               'heart-pulse',   '#f87171', true),
+  ('kids',       'Dzieci',                'baby',          '#f472b6', true),
+  ('travel',     'Wyjazdy',               'plane',         '#22d3ee', true),
+  ('subs',       'Subskrypcje',           'smartphone',    '#a78bfa', true),
+  ('loans',      'Spłaty rat',            'credit-card',   '#475569', true),
+  ('extra',      'Dodatkowe wydatki',     'wallet',        '#14b8a6', true),
+  ('other',      'Inne',                  'package',       '#94a3b8', true)
 on conflict (slug) do update set
   name = excluded.name,
   icon = excluded.icon,
   color = excluded.color,
   is_builtin = excluded.is_builtin;
+
+-- ============ MIGRACJA: nowe kategorie (jeśli baza już istnieje) ============
+-- Uruchom ten fragment osobno w SQL Editor jeśli app jest już wdrożona:
+-- insert into public.categories (slug, name, icon, color, is_builtin) values
+--   ('dining', 'Jedzenie poza domem', 'utensils', '#fb923c', true),
+--   ('extra',  'Dodatkowe wydatki',   'wallet',   '#14b8a6', true)
+-- on conflict (slug) do update set
+--   name = excluded.name, icon = excluded.icon, color = excluded.color, is_builtin = excluded.is_builtin;
 
 -- ============ STORAGE BUCKET ============
 -- Bucket `receipts` utwórz ręcznie w panelu Storage → New bucket → Public: ON.

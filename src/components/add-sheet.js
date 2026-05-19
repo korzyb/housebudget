@@ -2,6 +2,7 @@ import { h } from '../dom.js';
 import { icon } from '../icons.js';
 import { navigate } from '../router.js';
 import { processReceiptBlob } from '../views/camera.js';
+import { importCSV } from '../import-csv.js';
 
 let currentSheet = null;
 
@@ -39,6 +40,7 @@ export function openAddSheet() {
     option('image', 'Galeria', 'Wybierz zdjęcie paragonu z telefonu', () => triggerGalleryPick()),
     option('file-text', 'Plik', 'Wybierz PDF z paragonem (np. e-paragon)', () => triggerFilePick()),
     option('edit', 'Wprowadź ręcznie', 'Wpisz kwotę i kategorię', () => navigate('/receipt/new')),
+    option('file-spreadsheet', 'Import CSV', 'Wczytaj historię operacji z mBanku (.csv)', () => triggerCSVPick()),
     h('button', {
       class: 'btn btn-ghost btn-block',
       type: 'button',
@@ -66,6 +68,33 @@ function triggerGalleryPick() {
 // i otwiera prosto przeglądarkę plików / Downloads.
 function triggerFilePick() {
   openNativePicker('application/pdf');
+}
+
+function triggerCSVPick() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.csv,text/csv';
+  input.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
+
+  let handled = false;
+
+  input.addEventListener('change', () => {
+    if (handled) return;
+    handled = true;
+    const file = input.files?.[0];
+    input.remove();
+    if (!file) return;
+    importCSV(file);
+  });
+
+  input.addEventListener('cancel', () => {
+    if (handled) return;
+    handled = true;
+    input.remove();
+  });
+
+  document.body.appendChild(input);
+  input.click();
 }
 
 function openNativePicker(acceptStr) {

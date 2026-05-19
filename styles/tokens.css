@@ -51,7 +51,9 @@
   --cat-kids: #f472b6;        /* ciepły różowy */
   --cat-travel: #22d3ee;      /* turkusowy */
   --cat-subs: #a78bfa;        /* szarofioletowy */
+  --cat-dining: #fb923c;      /* ciepły pomarańcz — restauracje */
   --cat-loans: #475569;       /* slate — spłaty rat/kredytu */
+  --cat-extra: #14b8a6;       /* teal — dodatkowe wydatki */
   --cat-other: #94a3b8;       /* szaroniebieski */
 
   /* Tła kategorii (przyciemnione na dark, rozjaśnione na light — definiowane per-theme) */
@@ -95,7 +97,9 @@
   --cat-kids-bg: rgba(244, 114, 182, 0.16);
   --cat-travel-bg: rgba(34, 211, 238, 0.16);
   --cat-subs-bg: rgba(167, 139, 250, 0.16);
+  --cat-dining-bg: rgba(251, 146, 60, 0.16);
   --cat-loans-bg: rgba(71, 85, 105, 0.22);
+  --cat-extra-bg: rgba(20, 184, 166, 0.16);
   --cat-other-bg: rgba(148, 163, 184, 0.16);
 
   color-scheme: dark;
@@ -139,7 +143,9 @@
   --cat-kids-bg: rgba(244, 114, 182, 0.14);
   --cat-travel-bg: rgba(34, 211, 238, 0.14);
   --cat-subs-bg: rgba(167, 139, 250, 0.14);
+  --cat-dining-bg: rgba(251, 146, 60, 0.14);
   --cat-loans-bg: rgba(71, 85, 105, 0.16);
+  --cat-extra-bg: rgba(20, 184, 166, 0.14);
   --cat-other-bg: rgba(148, 163, 184, 0.14);
 
   color-scheme: light;

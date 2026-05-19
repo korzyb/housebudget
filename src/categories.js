@@ -5,12 +5,14 @@
 import { store } from './store.js';
 
 export const BUILTIN_CATEGORIES = [
-  { slug: 'food',       name: 'Jedzenie',    icon: 'shopping-cart', color: '#34d399', bg: 'var(--cat-food-bg)',
-    hint: 'zakupy spożywcze (Biedronka, Lidl, Carrefour), restauracje, fast food, kawa, słodycze, alkohol' },
-  { slug: 'transport',  name: 'Transport',   icon: 'car',           color: '#6366f1', bg: 'var(--cat-transport-bg)',
+  { slug: 'food',       name: 'Jedzenie',              icon: 'shopping-cart',   color: '#34d399', bg: 'var(--cat-food-bg)',
+    hint: 'zakupy spożywcze (Biedronka, Lidl, Carrefour, Frisco), piekarnia, słodycze, alkohol ze sklepu' },
+  { slug: 'dining',     name: 'Jedzenie poza domem',   icon: 'utensils',        color: '#fb923c', bg: 'var(--cat-dining-bg)',
+    hint: 'restauracje, fast food (McDonald\'s, KFC, Burger King), pizzeria, sushi, kebab, kawiarnia, kawa na mieście, lody, bar' },
+  { slug: 'transport',  name: 'Transport',             icon: 'car',             color: '#6366f1', bg: 'var(--cat-transport-bg)',
     hint: 'paliwo (Orlen, Shell, BP), MPK, ZTM, taxi, Uber, Bolt, parkingi, opłaty drogowe, naprawy/serwis auta' },
-  { slug: 'fun',        name: 'Rozrywka',    icon: 'gamepad-2',     color: '#8b5cf6', bg: 'var(--cat-fun-bg)',
-    hint: 'kino, koncerty, gry, książki, hobby, sport rekreacyjny, wyjścia ze znajomymi' },
+  { slug: 'fun',        name: 'Rozrywka',              icon: 'gamepad-2',       color: '#8b5cf6', bg: 'var(--cat-fun-bg)',
+    hint: 'kino, koncerty, eventy, gry, książki, hobby, sport rekreacyjny, wyjścia ze znajomymi (nie restauracje)' },
   { slug: 'home',       name: 'Dom',         icon: 'home',          color: '#f59e0b', bg: 'var(--cat-home-bg)',
     hint: 'czynsz, prąd, gaz, woda, internet, meble, AGD, RTV, IKEA, Castorama, remonty, ogród' },
   { slug: 'health',     name: 'Zdrowie',     icon: 'heart-pulse',   color: '#f87171', bg: 'var(--cat-health-bg)',
@@ -23,8 +25,10 @@ export const BUILTIN_CATEGORIES = [
     hint: 'Netflix, Spotify, YouTube Premium, abonament telefoniczny, chmury (iCloud, Google), SaaS' },
   { slug: 'loans',      name: 'Spłaty rat',  icon: 'credit-card',   color: '#475569', bg: 'var(--cat-loans-bg)',
     hint: 'rata kredytu, leasing samochodu/sprzętu, pożyczki, raty 0%, zakupy na raty (Allegro Pay, PayU Później)' },
-  { slug: 'other',      name: 'Inne',        icon: 'package',       color: '#94a3b8', bg: 'var(--cat-other-bg)',
-    hint: 'cokolwiek co nie pasuje do pozostałych kategorii — np. ubrania dla dorosłych, prezenty, darowizny' },
+  { slug: 'extra',      name: 'Dodatkowe wydatki', icon: 'wallet',      color: '#14b8a6', bg: 'var(--cat-extra-bg)',
+    hint: 'ubrania, prezenty, elektronika, AGD, zakupy na Allegro/Amazon, wydatki których nie spodziewałeś się w tym miesiącu' },
+  { slug: 'other',      name: 'Inne',              icon: 'package',     color: '#94a3b8', bg: 'var(--cat-other-bg)',
+    hint: 'cokolwiek co nie pasuje do pozostałych kategorii — darowizny, różne drobne, opłaty bankowe' },
 ];
 
 export function bgForColor(hex) {
@@ -50,16 +54,18 @@ export function categoryBg(c) {
   if (!c) return 'var(--surface-2)';
   if (c.slug) {
     const map = {
-      food: 'var(--cat-food-bg)',
+      food:      'var(--cat-food-bg)',
+      dining:    'var(--cat-dining-bg)',
       transport: 'var(--cat-transport-bg)',
-      fun: 'var(--cat-fun-bg)',
-      home: 'var(--cat-home-bg)',
-      health: 'var(--cat-health-bg)',
-      kids: 'var(--cat-kids-bg)',
-      travel: 'var(--cat-travel-bg)',
-      subs: 'var(--cat-subs-bg)',
-      loans: 'var(--cat-loans-bg)',
-      other: 'var(--cat-other-bg)',
+      fun:       'var(--cat-fun-bg)',
+      home:      'var(--cat-home-bg)',
+      health:    'var(--cat-health-bg)',
+      kids:      'var(--cat-kids-bg)',
+      travel:    'var(--cat-travel-bg)',
+      subs:      'var(--cat-subs-bg)',
+      loans:     'var(--cat-loans-bg)',
+      extra:     'var(--cat-extra-bg)',
+      other:     'var(--cat-other-bg)',
     };
     if (map[c.slug]) return map[c.slug];
   }

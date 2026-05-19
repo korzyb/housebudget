@@ -39,6 +39,13 @@ export function renderReceiptDetail({ id }) {
     };
   }
 
+  // Wyciągamy metadane importu CSV (przechowywane jako specjalny wpis __meta w tablicy items).
+  // Filtrujemy go z model.items żeby nie psuć wyświetlania pozycji i obliczeń kwoty.
+  const importMeta = Array.isArray(model.items)
+    ? (model.items.find(i => i.__meta) ?? null)
+    : null;
+  model.items = Array.isArray(model.items) ? model.items.filter(i => !i.__meta) : [];
+
   const root = h('div', { class: 'view detail-view' });
   let saving = false;
   let storeNameInput = null;
@@ -56,6 +63,34 @@ export function renderReceiptDetail({ id }) {
       h('h1', {}, existing ? 'Edytuj rachunek' : 'Nowy rachunek'),
       h('div', { style: { width: '60px' } }),
     ]));
+
+    // Baner duplikatu (tylko dla rachunków z importu CSV oznaczonych jako możliwy duplikat)
+    if (importMeta?.possible_duplicate) {
+      const clearBtn = h('button', {
+        class: 'btn btn-block',
+        type: 'button',
+        style: { background: 'var(--surface-2)', gap: '8px' },
+        onClick: async () => {
+          try {
+            const updatedItems = [...model.items.filter(it => it.name || it.price), { ...importMeta, possible_duplicate: false }];
+            await saveReceipt({ id: existing.id, items: updatedItems });
+            toast('Oznaczono jako zweryfikowany', 'success');
+            navigate('/receipts');
+          } catch (err) {
+            toast(err.message || 'Błąd', 'error');
+          }
+        },
+      }, [icon('shield-check', { size: 16 }), 'Nie jest duplikatem']);
+
+      root.appendChild(h('div', { class: 'dup-banner' }, [
+        h('div', { class: 'dup-banner-head' }, [
+          icon('alert-triangle', { size: 16, strokeWidth: 2 }),
+          h('span', { class: 'dup-banner-title' }, 'Możliwy duplikat'),
+        ]),
+        h('div', { class: 'dup-banner-text' }, 'Ten wydatek może być tym samym co inny rachunek w budżecie (ta sama data i kwota). Zweryfikuj lub usuń jeden z nich.'),
+        clearBtn,
+      ]));
+    }
 
     // Photo (jeśli jest)
     if (model.photo_url) {
@@ -192,7 +227,11 @@ export function renderReceiptDetail({ id }) {
           amount: total,
           description: model.description?.trim() || null,
           photo_url: model.photo_url || null,
-          items: model.items.filter(it => it.name || it.price),
+          // importMeta jest przepisywany z powrotem żeby przetrwał edycje rachunku
+          items: [
+            ...model.items.filter(it => it.name || it.price),
+            ...(importMeta ? [importMeta] : []),
+          ],
         };
 
         // Sprawdzenie duplikatu (sklep + data + kwota) — pomijamy gdy edytujemy ten sam rachunek
@@ -230,7 +269,23 @@ export function renderReceiptDetail({ id }) {
         onClick: async () => {
           if (!confirm('Usunąć ten rachunek?')) return;
           try {
+            const deletedDate = existing.purchase_date;
+            const deletedAmt  = Math.round(Number(existing.amount) * 100);
+
             await deleteReceipt(existing.id);
+
+            // Jeśli usunięty rachunek miał bliźniaka z flagą duplikatu (ta sama data + kwota),
+            // czyścimy jego flagę — sytuacja duplikatu jest już rozwiązana.
+            const twins = store.receipts.filter(r =>
+              r.purchase_date === deletedDate &&
+              Math.round(Number(r.amount) * 100) === deletedAmt &&
+              Array.isArray(r.items) && r.items.some(i => i.__meta && i.possible_duplicate)
+            );
+            for (const twin of twins) {
+              const newItems = twin.items.map(i => i.__meta ? { ...i, possible_duplicate: false } : i);
+              await saveReceipt({ id: twin.id, items: newItems }).catch(console.error);
+            }
+
             toast('Usunięto', 'success');
             navigate('/receipts');
           } catch (err) {
