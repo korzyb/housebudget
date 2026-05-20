@@ -24,8 +24,11 @@ export function categoryCard(category, amount, formatPLN) {
 }
 
 // Karta kategorii do siatki 3-kolumnowej na dashboardzie (z procentem)
-export function categoryGridCard(category, amount, pct, formatPLN) {
-  return h('div', { class: 'cat-grid-card' }, [
+export function categoryGridCard(category, amount, pct, formatPLN, onClick) {
+  return h('div', {
+    class: 'cat-grid-card' + (onClick ? ' tap' : ''),
+    onClick: onClick || null,
+  }, [
     categoryIconBox(category, { size: 28 }),
     h('div', { class: 'name' }, category.name),
     h('div', { class: 'amount' }, formatPLN(amount)),

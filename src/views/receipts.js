@@ -13,6 +13,15 @@ const filters = {
   rangeKey: 'month',
 };
 
+// Ustawia filtry przed przejściem z innego widoku (np. dashboard → kategoria)
+export function presetFilter(categoryId) {
+  const today = new Date();
+  filters.rangeKey   = 'month';
+  filters.from       = toISODate(new Date(today.getFullYear(), today.getMonth(), 1));
+  filters.to         = toISODate(new Date(today.getFullYear(), today.getMonth() + 1, 0));
+  filters.categoryId = categoryId ?? null;
+}
+
 export function renderReceipts() {
   loadReceipts();
 

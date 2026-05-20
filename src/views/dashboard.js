@@ -7,6 +7,7 @@ import { statCard } from '../components/stat-card.js';
 import { budgetRing } from '../components/budget-ring.js';
 import { barChart } from '../components/bar-chart.js';
 import { categoryGridCard, categoryIconBox } from '../components/category-chip.js';
+import { presetFilter } from './receipts.js';
 import { categoryPieChart, extraPieChart } from '../components/pie-chart.js';
 import { receiptRow } from '../components/receipt-row.js';
 import { navigate } from '../router.js';
@@ -113,7 +114,10 @@ export function renderDashboard() {
         h('div', { class: 't-section', style: { padding: '0 0 8px' } }, 'Kategorie w tym miesiącu'),
         h('div', { class: 'cat-grid-3' },
           sortedCats.map(({ c, total }) =>
-            categoryGridCard(c, total, monthTotal > 0 ? (total / monthTotal) * 100 : 0, formatPLN)
+            categoryGridCard(c, total, monthTotal > 0 ? (total / monthTotal) * 100 : 0, formatPLN, () => {
+              presetFilter(c.id);
+              navigate('/receipts');
+            })
           )
         ),
       ]));
