@@ -156,6 +156,8 @@ Reguły:
 - Uwzględniaj TYLKO wydatki. Pomiń wpływy i przelewy przychodzące.
 - Pomiń transakcje z "Korzybszczak" w opisie lub tytule.
 - Pomiń transakcje z "me BLIK" w opisie lub tytule.
+- Pomiń transakcje oznaczone jako "PRZELEW WŁASNY".
+- Pomiń transakcje z "KONRAD KORZYBSKI" w opisie lub tytule.
 - amount: liczba dodatnia (np. 148.46), kropka jako separator dziesiętny.
 - date: format YYYY-MM-DD.
 - description: nazwa sklepu lub usługodawcy, max 80 znaków.
