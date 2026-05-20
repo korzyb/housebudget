@@ -249,7 +249,7 @@ export function renderReceiptDetail({ id }) {
         try {
           await saveReceipt(payload);
           toast(existing ? 'Zaktualizowano' : 'Zapisano', 'success');
-          navigate('/receipts');
+          history.back();
         } catch (err) {
           toast(err.message || 'Błąd zapisu', 'error');
           saveBtn.disabled = false;

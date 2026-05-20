@@ -9,10 +9,10 @@ import { calendarGrid } from '../components/calendar-grid.js';
 import { getCategory, categoryColor } from '../categories.js';
 import { formatPLN, formatDate, addMonths, toDate, toISODate } from '../format.js';
 
-export function renderCalendar() {
-  let monthCursor = new Date(); monthCursor.setDate(1);
-  let selectedDay = null;
+let monthCursor = (() => { const d = new Date(); d.setDate(1); return d; })();
+let selectedDay = null;
 
+export function renderCalendar() {
   loadReceipts();
 
   const root = h('div', {});
