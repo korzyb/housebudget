@@ -20,6 +20,11 @@ export function renderCalendar() {
   function rerender() {
     root.replaceChildren();
 
+    const todayISO = toISODate(new Date());
+    const isCurrentMonth = monthCursor.getFullYear() === new Date().getFullYear()
+      && monthCursor.getMonth() === new Date().getMonth();
+    const showTodayBtn = !isCurrentMonth || selectedDay !== todayISO;
+
     root.appendChild(h('div', { class: 'cal-header' }, [
       h('button', {
         class: 'btn btn-icon',
@@ -27,7 +32,22 @@ export function renderCalendar() {
         'aria-label': 'Poprzedni miesiąc',
         onClick: () => { monthCursor = addMonths(monthCursor, -1); monthCursor.setDate(1); selectedDay = null; rerender(); },
       }, icon('chevron-left')),
-      h('h2', {}, formatDate(monthCursor, 'month')),
+      h('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' } }, [
+        h('h2', {}, formatDate(monthCursor, 'month')),
+        showTodayBtn
+          ? h('button', {
+              class: 'btn btn-ghost',
+              type: 'button',
+              style: { fontSize: '12px', minHeight: '24px', padding: '2px 10px' },
+              onClick: () => {
+                const now = new Date();
+                monthCursor = new Date(now.getFullYear(), now.getMonth(), 1);
+                selectedDay = todayISO;
+                rerender();
+              },
+            }, 'Dziś')
+          : h('div', { style: { minHeight: '24px' } }),
+      ]),
       h('button', {
         class: 'btn btn-icon',
         type: 'button',

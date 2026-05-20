@@ -53,6 +53,13 @@ export function autoDescription(slug) {
   return CATEGORY_SHORT_LABELS[slug] || null;
 }
 
+export function getCategoryHint(idOrSlug) {
+  if (!idOrSlug) return null;
+  const storeCat = store.categories.find(c => c.id === idOrSlug || c.slug === idOrSlug);
+  const slug = storeCat?.slug || idOrSlug;
+  return BUILTIN_CATEGORIES.find(b => b.slug === slug)?.hint || null;
+}
+
 export function bgForColor(hex) {
   // Konwertuje hex na rgba(...,0.16). Używane gdy custom category nie ma bg.
   if (!hex || !hex.startsWith('#')) return 'var(--surface-2)';

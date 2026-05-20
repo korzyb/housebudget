@@ -5,7 +5,7 @@ import { saveReceipt, deleteReceipt } from '../supabase.js';
 import { navigate } from '../router.js';
 import { bottomNav } from '../components/bottom-nav.js';
 import { categoryIconBox } from '../components/category-chip.js';
-import { getCategory } from '../categories.js';
+import { getCategory, getCategoryHint } from '../categories.js';
 import { formatPLN, formatDate, parsePLN, toISODate } from '../format.js';
 
 export function renderReceiptDetail({ id }) {
@@ -125,13 +125,21 @@ export function renderReceiptDetail({ id }) {
     ]));
 
     // Kategoria — siatka chipów
-    root.appendChild(h('div', { class: 'field', style: { marginBottom: '12px' } }, [
+    root.appendChild(h('div', { class: 'field', style: { marginBottom: '4px' } }, [
       h('label', {}, 'Kategoria'),
       categoryGrid(model.category_id, (id) => {
         model.category_id = id;
         rerender();
       }),
     ]));
+
+    const catHint = getCategoryHint(model.category_id);
+    if (catHint) {
+      root.appendChild(h('div', {
+        class: 'muted',
+        style: { fontSize: '12px', padding: '6px 2px 14px', lineHeight: '1.5' },
+      }, catHint));
+    }
 
     // Kwota (lub łączna z pozycji)
     const amountField = h('div', { class: 'field', style: { marginBottom: '12px' } }, [
