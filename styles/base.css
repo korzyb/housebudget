@@ -94,6 +94,8 @@ a:active { opacity: 0.7; }
 .view-header h1 {
   font-size: 22px;
   font-weight: var(--fw-bold);
+  user-select: none;
+  -webkit-user-select: none;
 }
 .stack { display: flex; flex-direction: column; }
 .stack > * + * { margin-top: var(--gap, var(--sp-3)); }
