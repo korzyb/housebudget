@@ -101,6 +101,55 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Siatka kategorii 3-kolumnowa */
+.cat-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.cat-grid-card {
+  background: var(--surface);
+  border-radius: var(--r-card);
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  min-width: 0;
+}
+.cat-grid-card .name {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.2;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.cat-grid-card .amount {
+  font-size: 13px;
+  font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+.cat-grid-card .pct {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Karuzela kart na pełną szerokość (jak .card w .view) */
+.rings-carousel-wrap {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+}
+.rings-carousel-wrap::-webkit-scrollbar { display: none; }
+.rings-carousel-wrap > .card { scroll-snap-align: start; }
+
 /* ============ FILTRY (Receipts) ============ */
 .filter-bar {
   display: flex;

@@ -5,11 +5,12 @@ import { bottomNav } from '../components/bottom-nav.js';
 import { receiptRow } from '../components/receipt-row.js';
 import { formatPLN, toDate, toISODate, addMonths } from '../format.js';
 
+const _today = new Date();
 const filters = {
-  from: null,
-  to: null,
+  from: toISODate(new Date(_today.getFullYear(), _today.getMonth(), 1)),
+  to:   toISODate(new Date(_today.getFullYear(), _today.getMonth() + 1, 0)),
   categoryId: null,
-  rangeKey: 'all',
+  rangeKey: 'month',
 };
 
 export function renderReceipts() {
@@ -32,8 +33,8 @@ export function renderReceipts() {
   ]);
 
   // ── Range chips (built once) ─────────────────────────────────────
-  const RANGE_KEYS   = ['all', 'month', '3months', 'year'];
-  const RANGE_LABELS = ['Wszystkie', 'Ten miesiąc', '3 miesiące', 'Rok'];
+  const RANGE_KEYS   = ['month', '3months', 'year', 'all'];
+  const RANGE_LABELS = ['Ten miesiąc', '3 miesiące', 'Rok', 'Wszystkie'];
 
   const rangeChipEls = RANGE_KEYS.map((key, i) =>
     h('button', {
