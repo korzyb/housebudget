@@ -31,6 +31,28 @@ export const BUILTIN_CATEGORIES = [
     hint: 'cokolwiek co nie pasuje do pozostałych kategorii — darowizny, różne drobne, opłaty bankowe' },
 ];
 
+const CATEGORY_SHORT_LABELS = {
+  food:      'zakupy spożywcze',
+  dining:    'restauracja / jedzenie',
+  transport: 'transport / paliwo',
+  fun:       'rozrywka',
+  home:      'dom / media',
+  health:    'zdrowie / drogeria',
+  kids:      'dzieci / edukacja',
+  travel:    'podróż',
+  subs:      'subskrypcja / abonament',
+  loans:     'rata / kredyt',
+  extra:     'dodatkowe wydatki',
+  other:     'inne',
+};
+
+// Krótki opis kategorii do automatycznego wypełniania pola "opis" rachunku.
+// Zwraca null gdy slug nieznany — caller może pominąć pole.
+export function autoDescription(slug) {
+  if (!slug) return null;
+  return CATEGORY_SHORT_LABELS[slug] || null;
+}
+
 export function bgForColor(hex) {
   // Konwertuje hex na rgba(...,0.16). Używane gdy custom category nie ma bg.
   if (!hex || !hex.startsWith('#')) return 'var(--surface-2)';

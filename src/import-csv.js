@@ -5,8 +5,7 @@ import { getGeminiKey, getGeminiModel } from './gemini.js';
 import { store } from './store.js';
 import { saveReceipt } from './supabase.js';
 import { toast } from './dom.js';
-import { BUILTIN_CATEGORIES } from './categories.js';
-import { getCategory } from './categories.js';
+import { BUILTIN_CATEGORIES, getCategory, autoDescription } from './categories.js';
 
 // Mapowanie kategorii mBanku → nasze slugi
 const MBANK_MAP = {
@@ -95,7 +94,7 @@ export async function importCSV(file) {
         purchase_date: tx.date,
         category_id:   catId,
         amount:        tx.amount,
-        description:   null,
+        description:   autoDescription(tx.slug),
         photo_url:     null,
         items:         [importMeta],
       });

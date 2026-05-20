@@ -75,7 +75,7 @@ export function renderReceiptDetail({ id }) {
             const updatedItems = [...model.items.filter(it => it.name || it.price), { ...importMeta, possible_duplicate: false }];
             await saveReceipt({ id: existing.id, items: updatedItems });
             toast('Oznaczono jako zweryfikowany', 'success');
-            navigate('/receipts');
+            history.back();
           } catch (err) {
             toast(err.message || 'Błąd', 'error');
           }
@@ -287,7 +287,7 @@ export function renderReceiptDetail({ id }) {
             }
 
             toast('Usunięto', 'success');
-            navigate('/receipts');
+            history.back();
           } catch (err) {
             toast(err.message || 'Błąd usuwania', 'error');
           }

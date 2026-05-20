@@ -3,6 +3,7 @@ import { icon } from '../icons.js';
 import { navigate } from '../router.js';
 import { processReceiptBlob } from '../views/camera.js';
 import { importCSV } from '../import-csv.js';
+import { openTextImportModal } from '../import-text.js';
 
 let currentSheet = null;
 
@@ -41,6 +42,7 @@ export function openAddSheet() {
     option('file-text', 'Plik', 'Wybierz PDF z paragonem (np. e-paragon)', () => triggerFilePick()),
     option('edit', 'Wprowadź ręcznie', 'Wpisz kwotę i kategorię', () => navigate('/receipt/new')),
     option('file-spreadsheet', 'Import CSV', 'Wczytaj historię operacji z mBanku (.csv)', () => triggerCSVPick()),
+    option('clipboard-paste', 'Zestawienie tekstowe', 'Wklej tekst z wyciągu — AI wyodrębni wydatki', () => openTextImportModal()),
     h('button', {
       class: 'btn btn-ghost btn-block',
       type: 'button',

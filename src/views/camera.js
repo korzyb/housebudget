@@ -5,7 +5,7 @@ import { navigate } from '../router.js';
 import { uploadReceiptPhoto } from '../supabase.js';
 import { analyzeReceipt, hasGeminiKey } from '../gemini.js';
 import { toISODate } from '../format.js';
-import { getCategory } from '../categories.js';
+import { getCategory, autoDescription } from '../categories.js';
 
 // Wspólna procedura przetwarzania zdjęcia paragonu — używana z aparatu live i z galerii (add-sheet).
 // Pokazuje overlay w body, uploaduje, woła Gemini, ustawia draft i nawiguje do receipt-detail.
@@ -238,7 +238,7 @@ function buildDraft(ai, photoUrl) {
     purchase_date: ai?.purchase_date || toISODate(new Date()),
     category_id: catId,
     amount: ai?.total_amount || 0,
-    description: '',
+    description: autoDescription(ai?.suggested_category_slug),
     photo_url: photoUrl,
     items: ai?.items || [],
   };
