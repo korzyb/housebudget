@@ -62,6 +62,8 @@ Reguły:
 - Nazwy pozycji skracaj sensownie (max 40 znaków).
 - Jeśli nie jesteś pewny pola, użyj null.
 - Kategoria: dopasuj semantycznie, nie tylko po nazwie sklepu. Np. paragon za leasing samochodu → "loans", ratę kredytu mieszkaniowego → "loans", a nie "home".
+- Jeśli sklep lub opis zawiera "camp Łomianki", użyj kategorii "health".
+- Jeśli sklep lub opis zawiera "Allianz" i dotyczy ubezpieczenia, użyj kategorii "subs".
 - Zwróć WYŁĄCZNIE poprawny JSON bez żadnego dodatkowego tekstu, bez backticków, bez \`\`\`json.
 `.trim();
 

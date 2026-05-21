@@ -26,6 +26,15 @@ const MBANK_MAP = {
   'Płatności - inne':        'other',
 };
 
+// Reguły niestandardowe — najwyższy priorytet, uruchamiane przed KEYWORD_RULES.
+// rename: opcjonalnie nadpisuje tx.description (gdy opis z banku jest nieczytelny).
+const CUSTOM_RULES = [
+  { re: /camp\s*[łl]omianki/i,                         slug: 'health' },
+  { re: /UG\s*\/\s*2021/i,                             slug: 'loans',  rename: 'Kredyt Sadowa' },
+  { re: /4056[\sX]+3624|pakiet\s*bezpieczna\s*kart/i,  slug: 'subs',   rename: 'pakiet bezpieczna karta' },
+  { re: /allianz/i,                                    slug: 'subs' },
+];
+
 // Keyword rules — uruchamiane PRZED mapą mBanku (wyższy priorytet, bardziej precyzyjne).
 // Kolejność ma znaczenie: bardziej specyficzne reguły idą przed ogólnymi.
 const KEYWORD_RULES = [
@@ -48,7 +57,7 @@ const KEYWORD_RULES = [
   // Sklepy spożywcze i lokalne — wielobr = wielobranżowy (zazwyczaj lokalny sklep)
   { re: /biedronka|lidl|auchan|carrefour|kaufland|netto|stokrotka|dino|spar|makro|frisco|delikatesy|sklep\s*spo[zż]|warzywa|babci|m[aą]ka|wielobr|kerner|darko.pol/i, slug: 'food' },
   // Inne / opłaty bankowe
-  { re: /pakiet\s*bezpieczna|ubezpieczeni/i,                                               slug: 'other' },
+  { re: /ubezpieczeni/i,                                                                    slug: 'other' },
 ];
 
 export async function importCSV(file) {
@@ -124,6 +133,7 @@ async function assignCategories(transactions) {
   const needGemini = [];
 
   for (const tx of transactions) {
+    if (applyCustomRule(tx)) continue;
     // Keywords mają wyższy priorytet — łapią restauracje z "Wyjścia i wydarzenia" itp.
     const kw = keywordSlug(tx.description);
     if (kw) {
@@ -153,6 +163,17 @@ async function assignCategories(transactions) {
     console.error('[importCSV] Gemini batch error:', err);
     needGemini.forEach(tx => { tx.slug = 'other'; });
   }
+}
+
+function applyCustomRule(tx) {
+  for (const rule of CUSTOM_RULES) {
+    if (rule.re.test(tx.description)) {
+      tx.slug = rule.slug;
+      if (rule.rename) tx.description = rule.rename;
+      return true;
+    }
+  }
+  return false;
 }
 
 function keywordSlug(description) {

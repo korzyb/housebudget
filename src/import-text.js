@@ -7,6 +7,13 @@ import { saveReceipt } from './supabase.js';
 import { toast } from './dom.js';
 import { BUILTIN_CATEGORIES, getCategory, autoDescription } from './categories.js';
 
+const CUSTOM_RULES = [
+  { re: /camp\s*[łl]omianki/i,                         slug: 'health' },
+  { re: /UG\s*\/\s*2021/i,                             slug: 'loans',  rename: 'Kredyt Sadowa' },
+  { re: /4056[\sX]+3624|pakiet\s*bezpieczna\s*kart/i,  slug: 'subs',   rename: 'pakiet bezpieczna karta' },
+  { re: /allianz/i,                                    slug: 'subs' },
+];
+
 const CATEGORY_HINTS = BUILTIN_CATEGORIES
   .map(c => `"${c.slug}" (${c.name}): ${c.hint}`)
   .join('\n');
@@ -103,6 +110,7 @@ async function importText(text) {
       return;
     }
 
+    applyCustomRules(transactions);
     overlay.setText('Sprawdzam duplikaty…');
     const snapshot = [...store.receipts];
     let dupCount = 0;
@@ -158,6 +166,10 @@ Reguły:
 - Pomiń transakcje z "me BLIK" w opisie lub tytule.
 - Pomiń transakcje oznaczone jako "PRZELEW WŁASNY".
 - Pomiń transakcje z "KONRAD KORZYBSKI" w opisie lub tytule.
+- Jeśli opis zawiera "camp Łomianki", użyj kategorii "health".
+- Jeśli opis zawiera "UG /2021 @", ustaw description na "Kredyt Sadowa" i użyj kategorii "loans".
+- Jeśli opis zawiera "4056 XXXX XXXX 3624", ustaw description na "pakiet bezpieczna karta" i użyj kategorii "subs".
+- Jeśli opis zawiera "Allianz" i dotyczy ubezpieczenia, użyj kategorii "subs".
 - amount: liczba dodatnia (np. 148.46), kropka jako separator dziesiętny.
 - date: format YYYY-MM-DD.
 - description: nazwa sklepu lub usługodawcy, max 80 znaków.
@@ -207,6 +219,18 @@ ${text}`;
       slug: typeof tx.slug === 'string' ? tx.slug : 'other',
       possibleDuplicate: false,
     }));
+}
+
+function applyCustomRules(transactions) {
+  for (const tx of transactions) {
+    for (const rule of CUSTOM_RULES) {
+      if (rule.re.test(tx.description)) {
+        tx.slug = rule.slug;
+        if (rule.rename) tx.description = rule.rename;
+        break;
+      }
+    }
+  }
 }
 
 function checkDuplicate(tx, existingReceipts) {
