@@ -29,6 +29,7 @@ body {
   margin: 0 auto; /* centrowanie kolumny mobilnej na desktopie */
   background: var(--bg);
   position: relative;
+  overflow-x: hidden; /* zapobiega poziomemu overflow z filter-bar (ujemne marginesy) */
   padding-top: var(--top-safe);
   /* Bufor pod bottom-nav. Nav ~80px (Android) - ~98px (iPhone PWA), +button
      protrudes 12px nad nav top. ~32px gap nad +buttonem dla komfortu. */
