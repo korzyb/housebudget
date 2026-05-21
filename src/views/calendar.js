@@ -33,7 +33,11 @@ export function renderCalendar() {
         onClick: () => { monthCursor = addMonths(monthCursor, -1); monthCursor.setDate(1); selectedDay = null; rerender(); },
       }, icon('chevron-left')),
       h('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' } }, [
-        h('h2', {}, formatDate(monthCursor, 'month')),
+        h('h2', {
+          style: { cursor: selectedDay ? 'pointer' : 'default', userSelect: 'none', WebkitUserSelect: 'none' },
+          title: selectedDay ? 'Pokaż podsumowanie miesiąca' : '',
+          onClick: () => { if (selectedDay) { selectedDay = null; rerender(); } },
+        }, formatDate(monthCursor, 'month')),
         showTodayBtn
           ? h('button', {
               class: 'btn btn-ghost',
